@@ -38,10 +38,11 @@ router
 router
   .route('/reset-password/:resetPasswordToken')
   .patch(userResetPasswordValidation(), validate, resetPassword);
+router.route("/api-key").post() // Api_key route
 
 // Secure Routes
 router.route('/logout').patch(isLogedIn, logoutUser);
-router.route('/profile').get(isLogedIn, userProfile);
+router.route('/me').get(isLogedIn, userProfile);
 router
   .route('/change-current-password')
   .patch(
