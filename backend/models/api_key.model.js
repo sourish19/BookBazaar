@@ -1,4 +1,7 @@
+import crypto from 'crypto';
+
 import { Schema, model } from 'mongoose';
+import ApiError from '../utils/apiError.util.js';
 
 const apiKeySchema = new Schema(
   {
@@ -6,14 +9,31 @@ const apiKeySchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'User',
     },
-    key: {
+    apiToken: {
       type: String,
-      required: true,
-      trim: true,
+    },
+    apiTokenExpiry: {
+      type: Date,
     },
   },
   { timestamps: true }
 );
+
+apiKeySchema.pre('save', async function (next) {
+  const apiKey = this;
+  if (!apiKey.isModified('apiToken')) return next();
+  try {
+    const hashedApiKey = crypto
+      .createHash('sha256')
+      .update(apiKey.apiToken)
+      .digest('hex');
+    apiKey.apiToken = hashedApiKey;
+    return next();
+  } catch (error) {
+    console.error('Unable to generate hashed token');
+    next(error);
+  }
+});
 
 const ApiKey = model('Api_Key', apiKeySchema);
 
