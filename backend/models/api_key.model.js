@@ -1,7 +1,5 @@
 import crypto from 'crypto';
-
 import { Schema, model } from 'mongoose';
-import ApiError from '../utils/apiError.util.js';
 
 const apiKeySchema = new Schema(
   {
@@ -19,21 +17,19 @@ const apiKeySchema = new Schema(
   { timestamps: true }
 );
 
-apiKeySchema.pre('save', async function (next) {
-  const apiKey = this;
-  if (!apiKey.isModified('apiToken')) return next();
+apiKeySchema.methods.generateApiTokens = async function () {
   try {
-    const hashedApiKey = crypto
+    const unhashedApiToken = crypto.randomBytes(32).toString('hex');
+    const hashedApiToken = crypto
       .createHash('sha256')
-      .update(apiKey.apiToken)
+      .update(unhashedApiToken)
       .digest('hex');
-    apiKey.apiToken = hashedApiKey;
-    return next();
+    const tokenExpiry = Date.now() + 24 * 7 * 60 * 60 * 1000;
+    return { unhashedApiToken, hashedApiToken, tokenExpiry };
   } catch (error) {
-    console.error('Unable to generate hashed token');
-    next(error);
+    console.error('Unable to generate Api token');
   }
-});
+};
 
 const ApiKey = model('Api_Key', apiKeySchema);
 

@@ -1,5 +1,3 @@
-import crypto from 'crypto';
-
 import User from '../models/auth.model.js';
 import asyncHandler from '../utils/asyncHandler.util.js';
 import ApiKey from '../models/api_key.model.js';
@@ -13,14 +11,15 @@ const generateApiKey = asyncHandler(async (req, res) => {
 
   if (!user) throw new ApiError([], 'Invalid User', 400);
 
-  const token = crypto.randomBytes(32).toString('hex');
+  const { unhashedApiToken, hashedApiToken, tokenExpiry } =
+    ApiKey.generateApiTokens;
 
   const userApiKey = await ApiKey.findOneAndUpdate(
     { userId: user._id },
     {
       $set: {
-        apiToken: token,
-        apiTokenExpiry: Date.now() + 24 * 7 * 60 * 60 * 1000,
+        apiToken: hashedApiToken,
+        apiTokenExpiry: tokenExpiry,
       },
     },
     { upsert: true, new: true }
@@ -32,8 +31,12 @@ const generateApiKey = asyncHandler(async (req, res) => {
     .status(200)
     // As I am using Postman i have to manually set the headers every time
     // but frontend will set it when sending req to backend
-    .set('x-api-key', token)
-    .json(new ApiResponse(200, 'Api key generated successfully', []));
+    .set('x-api-key', unhashedApiToken)
+    .json(
+      new ApiResponse(200, { message: `Api key generated successfully` }, [
+        { apiKey: unhashedApiToken },
+      ])
+    );
 });
 
 export default generateApiKey;
