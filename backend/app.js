@@ -1,6 +1,5 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
-import cors from 'cors';
 import customErrorResponse from './middlewares/errors.middleware.js';
 
 import userRoute from './routes/user.route.js';

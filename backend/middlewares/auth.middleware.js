@@ -4,8 +4,9 @@ import asyncHandler from '../utils/asyncHandler.util.js';
 import { ACCESS_TOKEN } from '../utils/constants.util.js';
 import ApiError from '../utils/apiError.util.js';
 import User from '../models/auth.model.js';
+import { USER_ROLES } from '../utils/constants.util.js';
 
-const isLogedIn = asyncHandler(async (req, res, next) => {
+const isLoggedIn = asyncHandler(async (req, res, next) => {
   // Check if accessTkn is there in cookies or in headers
   const accessToken =
     req.cookies?.accessToken ||
@@ -24,7 +25,7 @@ const isLogedIn = asyncHandler(async (req, res, next) => {
       throw new ApiError([], 'Unauthorized request', 401);
 
     const decodedUser = await User.findById(decoded.id).select(
-      '-password -refreshToken -isEmailValid -emailVerificationToken -emailVerificationTokenExpiry -resetPasswordToken -resetPasswordTokenExpiry'
+      '-password -refreshToken -isEmailValid -userRole -emailVerificationToken -emailVerificationTokenExpiry -resetPasswordToken -resetPasswordTokenExpiry'
     );
 
     if (!decodedUser) throw new ApiError([], 'Unauthorized request', 401);
@@ -48,10 +49,10 @@ const verifyPermission = asyncHandler(async (req, res, next) => {
     '-password -refreshToken -isEmailValid -emailVerificationToken -emailVerificationTokenExpiry -resetPasswordToken -resetPasswordTokenExpiry'
   );
 
-  if (user.userRole === 'USER')
+  if (user.userRole === USER_ROLES.USER)
     throw new ApiError([], { message: 'Unauthorized Client' }, 403);
 
   next();
 });
 
-export { isLogedIn, verifyPermission };
+export { isLoggedIn, verifyPermission };

@@ -1,5 +1,5 @@
 import { body, param } from 'express-validator';
-import ApiError from '../utils/apiError.utils.js';
+import ApiError from '../utils/apiError.util.js';
 
 const userRegistrationValidation = () => {
   return [

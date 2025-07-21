@@ -6,13 +6,23 @@ import jwt from 'jsonwebtoken';
 import {
   REFRESH_TOKEN,
   ACCESS_TOKEN,
-  availableUserRoles,
-  userRoles,
+  AVAILABLE_USER_ROLES,
+  USER_ROLES,
 } from '../utils/constants.util.js';
 import ApiError from '../utils/apiError.util.js';
 
 const userSchema = new Schema(
   {
+    avatar: {
+      type: {
+        url: String,
+        locaPath: String,
+      },
+      default: {
+        url: `https://via.placeholder.com/200x200.png`,
+        localPath: '',
+      },
+    },
     username: {
       type: String,
       required: true,
@@ -29,12 +39,13 @@ const userSchema = new Schema(
     },
     password: {
       type: String,
-      required: true,
+      required: [true, 'Password is required'],
     },
     userRole: {
       type: String,
-      enum: availableUserRoles,
-      default: userRoles.USER,
+      enum: AVAILABLE_USER_ROLES,
+      default: USER_ROLES.USER,
+      required: true,
     },
     isEmailValid: {
       type: Boolean,

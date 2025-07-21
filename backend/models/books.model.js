@@ -1,5 +1,7 @@
 import { Schema, model } from 'mongoose';
 
+import { BOOKS_GENRE, AVAILABLE_BOOKS_GENRE } from '../utils/constants.util.js';
+
 const booksSchema = new Schema(
   {
     title: {
@@ -7,7 +9,6 @@ const booksSchema = new Schema(
       required: true,
       lowercase: true,
       trim: true,
-      unique: true,
     },
     author: {
       type: String,
@@ -17,7 +18,8 @@ const booksSchema = new Schema(
     },
     genre: {
       type: String,
-      required: true,
+      enum: AVAILABLE_BOOKS_GENRE,
+      default: BOOKS_GENRE.UNCATAGORIZED,
       lowercase: true,
       trim: true,
     },
@@ -25,6 +27,11 @@ const booksSchema = new Schema(
       type: String,
       required: true,
       lowercase: true,
+      trim: true,
+    },
+    publishedDate: {
+      type: Date,
+      required: true,
       trim: true,
     },
     price: {
@@ -36,15 +43,26 @@ const booksSchema = new Schema(
       required: true,
     },
     coverImage: {
-      type: String,
+      type: {
+        url: String,
+        localPath: String,
+      },
+      default: {
+        url: 'https://placehold.co/400',
+        localPath: '',
+      },
     },
     createdBy: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: 'User',
+      required: false,
     },
   },
   { timestamps: true }
 );
+//  prevents exact duplicates, not individual duplicates of just title or just author
+//  No two books can have the exact same combination of title and author.
+booksSchema.index({ title: 1, author: 1 }, { unique: true });
 
 const Books = model('Books', booksSchema);
 

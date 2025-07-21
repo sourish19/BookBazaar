@@ -3,15 +3,15 @@ import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 
 import User from '../models/auth.model.js';
-import ApiResponse from '../utils/apiResponse.utils.js';
-import ApiError from '../utils/apiError.utils.js';
-import asyncHandler from '../utils/asyncHandler.utils.js';
-import { REFRESH_TOKEN } from '../utils/constants.utils.js';
+import ApiResponse from '../utils/apiResponse.util.js';
+import ApiError from '../utils/apiError.util.js';
+import asyncHandler from '../utils/asyncHandler.util.js';
+import { REFRESH_TOKEN } from '../utils/constants.util.js';
 import {
   sendEmail,
   emailVerificationMailgenContent,
   resetPasswordMailgenContent,
-} from '../utils/mail.utils.js';
+} from '../utils/mail.util.js';
 
 const cookiesOption = {
   options: {
@@ -64,7 +64,7 @@ const registerUser = asyncHandler(async (req, res) => {
   await newUser.save();
 
   const createdUser = await User.findById(newUser._id).select(
-    '-password -refreshToken -isEmailValid -emailVerificationToken -emailVerificationTokenExpiry -resetPasswordToken -resetPasswordTokenExpiry'
+    '-password -refreshToken -isEmailValid -userRole -emailVerificationToken -emailVerificationTokenExpiry -resetPasswordToken -resetPasswordTokenExpiry'
   );
 
   if (!createdUser)
@@ -163,7 +163,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   const incommingRefreshToken = req.cookies?.refreshToken;
 
   if (!incommingRefreshToken)
-    throw new ApiError([], 'Unauthorized request - User not logedin', 401);
+    throw new ApiError([], 'Refresh Token not found', 401);
 
   try {
     const decode = jwt.verify(incommingRefreshToken, REFRESH_TOKEN.secret);
@@ -172,14 +172,9 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
     const user = await User.findById(decode.id);
 
-    if (!user)
-      throw new ApiError(
-        [],
-        'Unauthorized request - Invalid Refresh Token',
-        401
-      );
+    if (!user) throw new ApiError([], 'Invalid Refresh Token', 401);
 
-    const hashedRefToken = bcrypt.compare(
+    const hashedRefToken = await bcrypt.compare(
       incommingRefreshToken,
       user?.refreshToken
     );
@@ -191,10 +186,15 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
     res
       .status(200)
+      .set('x-access-token', accessToken)
       .cookie('accessToken', accessToken, cookiesOption.options)
       .cookie('refreshToken', refreshToken, cookiesOption.options)
       .json(
-        new ApiResponse(200, 'Successfully generated Refresh & Access token')
+        new ApiResponse(
+          200,
+          { message: 'Successfully generated Access & Refresh Token' },
+          [{ refreshTkn: refreshToken }]
+        )
       );
   } catch (error) {
     throw new ApiError(

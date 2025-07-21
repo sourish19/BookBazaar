@@ -1,4 +1,6 @@
 import { Router } from 'express';
+
+import generateApiKey from '../controllers/apiKey.controller.js';
 import {
   registerUser,
   verifyEmail,
@@ -16,9 +18,9 @@ import {
   userChangePasswordValidation,
   userResetPasswordValidation,
   userEmailValidation,
-} from '../validator/index.validate.js';
+} from '../validators/index.validator.js';
 import validate from '../middlewares/userValidate.middleware.js';
-import isLogedIn from '../middlewares/isLogedIn.middleware.js';
+import { isLoggedIn } from '../middlewares/auth.middleware.js';
 
 const router = Router();
 
@@ -38,15 +40,15 @@ router
 router
   .route('/reset-password/:resetPasswordToken')
   .patch(userResetPasswordValidation(), validate, resetPassword);
-router.route("/api-key").post() // Api_key route
+router.route('/api-key').post(isLoggedIn, generateApiKey); // Api_key route
 
 // Secure Routes
-router.route('/logout').patch(isLogedIn, logoutUser);
-router.route('/me').get(isLogedIn, userProfile);
+router.route('/logout').patch(isLoggedIn, logoutUser);
+router.route('/me').get(isLoggedIn, userProfile);
 router
   .route('/change-current-password')
   .patch(
-    isLogedIn,
+    isLoggedIn,
     userChangePasswordValidation(),
     validate,
     changeCurrentPassword

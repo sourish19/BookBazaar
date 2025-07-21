@@ -16,9 +16,18 @@ export const EMAIL = {
   authPass: process.env.MAILTRAP_PASSWORD,
 };
 
-export const userRoles = {
+export const USER_ROLES = {
   ADMIN: 'ADMIN',
   USER: 'USER',
 };
+export const AVAILABLE_USER_ROLES = Object.values(USER_ROLES);
 
-export const availableUserRoles = Object.values(userRoles);
+export const BOOKS_GENRE = {
+  FICTION: 'fiction',
+  'NON-FICTION': 'non-fiction',
+  FANTASY: 'fantasy',
+  'SCI-FI': 'sci-fi',
+  BIOGRAPHY: 'biography',
+  UNCATAGORIZED: 'uncatagorized',
+};
+export const AVAILABLE_BOOKS_GENRE = Object.values(BOOKS_GENRE);

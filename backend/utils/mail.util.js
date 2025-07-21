@@ -1,7 +1,7 @@
 import nodemailer from 'nodemailer';
 import Mailgen from 'mailgen';
 
-import { EMAIL } from './constants.utils.js';
+import { EMAIL } from './constants.util.js';
 
 const mailGenerator = new Mailgen({
   theme: 'default',
