@@ -1,4 +1,4 @@
-import { body } from 'express-validator';
+import { body, param } from 'express-validator';
 
 const addBookValidation = () => {
   return [
@@ -43,4 +43,52 @@ const addBookValidation = () => {
   ];
 };
 
-export { addBookValidation };
+const getBookDetailsValidation = () => {
+  return [
+    param('bookId')
+      .notEmpty()
+      .withMessage('ID param is required')
+      .isMongoId()
+      .withMessage('Invalid bookId'),
+  ];
+};
+
+const updateBookDetailsValidation = () => {
+  return [
+    param('bookId')
+      .notEmpty()
+      .withMessage('ID param is required')
+      .isMongoId()
+      .withMessage('Invalid bookId'),
+    body('title').trim().toLowerCase().optional(),
+    body('author').trim().toLowerCase().optional(),
+    body('genre').optional().trim().toLowerCase(),
+    body('description').trim().optional(),
+    body('publishedDate')
+      .trim()
+      .optional()
+      .isDate()
+      .withMessage('Published Date is not a date'),
+    body('price')
+      .trim()
+      .optional()
+      .isNumeric()
+      .withMessage('Price should be Numeric'),
+    body('stock')
+      .trim()
+      .optional()
+      .isNumeric()
+      .withMessage('Stock should be Numeric'),
+    body('coverImage')
+      .optional()
+      .trim()
+      .isURL()
+      .withMessage('Cover Image should be an URL'),
+  ];
+};
+
+export {
+  addBookValidation,
+  getBookDetailsValidation,
+  updateBookDetailsValidation,
+};
