@@ -10,10 +10,11 @@ import {
   getBookDetails,
   updateBookDetails,
   deleteBook,
+  listAllBooks,
 } from '../controllers/book.controller.js';
 import {
   addBookValidation,
-  getBookDetailsValidation,
+  bookIdValidation,
   updateBookDetailsValidation,
 } from '../validators/book.validator.js';
 import validate from '../middlewares/userValidate.middleware.js';
@@ -30,10 +31,10 @@ router
     validate,
     addBooks
   ); // Add Books - Adimin Only
-router.route('/').get(isLoggedIn, isApiKeyValid); // List all books
-router.route('/:id').get(getBookDetailsValidation(), validate, getBookDetails); // Get book details
+router.route('/').get(listAllBooks); // List all books
+router.route('/:bookId').get(bookIdValidation(), validate, getBookDetails); // Get book details
 router
-  .route('/:id')
+  .route('/:bookId')
   .put(
     isLoggedIn,
     isApiKeyValid,
@@ -43,7 +44,14 @@ router
     updateBookDetails
   ); // Update book - Admin only
 router
-  .route('/:id')
-  .delete(isLoggedIn, isApiKeyValid, verifyPermission, deleteBook); // Delete book - Admin only
+  .route('/:bookId')
+  .delete(
+    isLoggedIn,
+    isApiKeyValid,
+    verifyPermission,
+    bookIdValidation(),
+    validate,
+    deleteBook
+  ); // Delete book - Admin only
 
 export default router;

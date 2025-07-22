@@ -43,7 +43,7 @@ const addBookValidation = () => {
   ];
 };
 
-const getBookDetailsValidation = () => {
+const bookIdValidation = () => {
   return [
     param('bookId')
       .notEmpty()
@@ -87,8 +87,4 @@ const updateBookDetailsValidation = () => {
   ];
 };
 
-export {
-  addBookValidation,
-  getBookDetailsValidation,
-  updateBookDetailsValidation,
-};
+export { addBookValidation, bookIdValidation, updateBookDetailsValidation };
