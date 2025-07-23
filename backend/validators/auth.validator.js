@@ -24,6 +24,19 @@ const userRegistrationValidation = () => {
   ];
 };
 
+const userLoginValidation = () => {
+  return [
+    body('username').trim().notEmpty().withMessage('UserName is required'),
+    body('email').trim().notEmpty().withMessage('Email is required'),
+    body('password').trim().notEmpty().withMessage('Password is required'),
+    body('role').trim().notEmpty().withMessage('Role is required'),
+  ];
+};
+
+const tokenValidation = () => {
+  return [param('token').notEmpty().withMessage('Token is required')];
+};
+
 const userChangePasswordValidation = () => {
   return [
     body('old_password')
@@ -90,6 +103,8 @@ const userEmailValidation = () => {
 
 export {
   userRegistrationValidation,
+  userLoginValidation,
+  tokenValidation,
   userChangePasswordValidation,
   userResetPasswordValidation,
   userEmailValidation,

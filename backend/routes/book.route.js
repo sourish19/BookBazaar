@@ -21,18 +21,19 @@ import validate from '../middlewares/userValidate.middleware.js';
 
 const router = Router();
 
-router
-  .route('/')
-  .post(
-    isLoggedIn,
-    isApiKeyValid,
-    verifyPermission,
-    addBookValidation(),
-    validate,
-    addBooks
-  ); // Add Books - Adimin Only
+// Unsecured Routes
 router.route('/').get(listAllBooks); // List all books
 router.route('/:bookId').get(bookIdValidation(), validate, getBookDetails); // Get book details
+
+// Secured Routes
+router.route('/').post(
+  isLoggedIn,
+  isApiKeyValid,
+  verifyPermission,
+  addBookValidation(), // Need to handle Cover Image
+  validate,
+  addBooks
+); // Add Books - Adimin Only
 router
   .route('/:bookId')
   .put(

@@ -2,7 +2,7 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import customErrorResponse from './middlewares/errors.middleware.js';
 
-import userRoute from './routes/user.route.js';
+import userRoute from './routes/auth.route.js';
 import bookRoute from './routes/book.route.js';
 import reviewsRoute from './routes/review.route.js';
 import ordersRoute from './routes/order.route.js';

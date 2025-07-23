@@ -11,14 +11,14 @@ const generateApiKey = asyncHandler(async (req, res) => {
 
   if (!user) throw new ApiError([], 'Invalid User', 400);
 
-  const { unhashedApiToken, hashedApiToken, tokenExpiry } =
-    ApiKey.generateApiTokens;
+  const { token, hashedToken, tokenExpiry } =
+    await user.generateRandomHashedTokens();
 
   const userApiKey = await ApiKey.findOneAndUpdate(
     { userId: user._id },
     {
       $set: {
-        apiToken: hashedApiToken,
+        apiToken: hashedToken,
         apiTokenExpiry: tokenExpiry,
       },
     },
@@ -31,10 +31,10 @@ const generateApiKey = asyncHandler(async (req, res) => {
     .status(200)
     // As I am using Postman i have to manually set the headers every time
     // but frontend will set it when sending req to backend
-    .set('x-api-key', unhashedApiToken)
+    .set('x-api-key', token)
     .json(
       new ApiResponse(200, { message: `Api key generated successfully` }, [
-        { apiKey: unhashedApiToken },
+        { apiKey: token },
       ])
     );
 });

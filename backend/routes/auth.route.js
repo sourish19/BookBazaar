@@ -15,10 +15,12 @@ import {
 } from '../controllers/auth.controller.js';
 import {
   userRegistrationValidation,
+  userLoginValidation,
+  tokenValidation,
   userChangePasswordValidation,
   userResetPasswordValidation,
   userEmailValidation,
-} from '../validators/index.validator.js';
+} from '../validators/auth.validator.js';
 import validate from '../middlewares/userValidate.middleware.js';
 import { isLoggedIn } from '../middlewares/auth.middleware.js';
 
@@ -28,8 +30,10 @@ const router = Router();
 router
   .route('/register')
   .post(userRegistrationValidation(), validate, registerUser);
-router.route('/verify-email/:token').get(verifyEmail);
-router.route('/login').post(userRegistrationValidation(), validate, loginUser);
+router
+  .route('/verify-email/:token')
+  .get(tokenValidation(), validate, verifyEmail);
+router.route('/login').post(userLoginValidation(), validate, loginUser);
 router.route('/refresh-access-token').patch(refreshAccessToken);
 router
   .route('/resend-email-verification')

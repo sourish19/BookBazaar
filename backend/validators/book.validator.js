@@ -37,9 +37,7 @@ const addBookValidation = () => {
       .withMessage('Stock should be Numeric'),
     body('coverImage')
       .optional()
-      .trim()
-      .isURL()
-      .withMessage('Cover Image should be an URL'),
+      .trim(),
   ];
 };
 

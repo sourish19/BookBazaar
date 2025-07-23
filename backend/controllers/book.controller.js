@@ -21,7 +21,7 @@ const addBooks = asyncHandler(async (req, res) => {
 
   // if Book found in db throw an error
   if (availableBook)
-    throw new ApiError([], { message: 'Book is already registered' }, 400);
+    throw new ApiError([], { message: 'Book already exists' }, 400);
 
   // Creates and saves in the db
   const createBook = await Books.create({
@@ -42,8 +42,8 @@ const addBooks = asyncHandler(async (req, res) => {
     throw new ApiError([], { message: 'Unable to add book' }, 500);
 
   //  Return the db book details for frontend to display it
-  res.status(200).json(
-    new ApiResponse(200, { message: 'Book added successfully' }, [
+  res.status(201).json(
+    new ApiResponse(201, { message: 'Book added successfully' }, [
       {
         bookId: createBook._id,
         title: createBook.title,
@@ -65,7 +65,7 @@ const getBookDetails = asyncHandler(async (req, res) => {
   );
 
   if (!bookDetails)
-    throw new ApiError([], { message: 'Cannot find the required Book' }, 400);
+    throw new ApiError([], { message: 'Book not found' }, 404);
 
   // Destructure bookDetails
   const {
@@ -81,7 +81,7 @@ const getBookDetails = asyncHandler(async (req, res) => {
   } = bookDetails;
 
   return res.status(200).json(
-    new ApiResponse(200, { message: 'Book detail found' }, [
+    new ApiResponse(200, { message: 'Book details retrived successfully' }, [
       {
         bookId: _id,
         title,
@@ -112,7 +112,7 @@ const updateBookDetails = asyncHandler(async (req, res) => {
     }).select('-createdBy');
 
     if (!updateBook)
-      throw new ApiError([], { message: 'Invalid Book ID' }, 400);
+      throw new ApiError([], { message: 'Book not found' }, 404);
 
     res.status(200).json(
       new ApiResponse(200, { message: 'Book updated successfully' }, [
@@ -145,10 +145,10 @@ const deleteBook = asyncHandler(async (req, res) => {
     new: true,
   }).select('-createdBy');
 
-  if (!findBook) throw new ApiError([], { message: 'Invalid Book ID' }, 400);
+  if (!findBook) throw new ApiError([], { message: 'Books not found' }, 404);
 
   res.status(200).json(
-    new ApiResponse(200, { message: 'Successfully deleted Book' }, [
+    new ApiResponse(200, { message: 'Book deleted successfully' }, [
       {
         bookId: findBook._id,
         title: findBook.title,
@@ -174,11 +174,7 @@ const listAllBooks = asyncHandler(async (req, res) => {
     books = await Books.find().select('-createdBy');
   }
 
-  if (!books || books.length === 0) {
-    throw new ApiError([], { message: 'Books not found' }, 400);
-  }
-
-  const booksData = books.map((book) => ({
+  const booksData = books?.map((book) => ({
     bookId: book._id,
     title: book.title,
     author: book.author,
@@ -193,7 +189,15 @@ const listAllBooks = asyncHandler(async (req, res) => {
   res
     .status(200)
     .json(
-      new ApiResponse(200, { message: 'Books fetched successfully' }, booksData)
+      new ApiResponse(
+        200,
+        {
+          message: books.length
+            ? `${books.length} books found.`
+            : 'No books found',
+        },
+        booksData
+      )
     );
 });
 

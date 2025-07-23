@@ -27,8 +27,6 @@ const generateRefreshAccessToken = async (user) => {
   const refreshToken = await user.generateRefreshToken();
   const accessToken = await user.generateAccessToken();
 
-  await user.save({ validateBeforeSave: false });
-
   return { accessToken, refreshToken };
 };
 
@@ -79,9 +77,7 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 const verifyEmail = asyncHandler(async (req, res) => {
-  const { token } = req.params;
-
-  if (!token) throw new ApiError([], 'Token not found!', 400);
+  const token = req.params?.token;
 
   const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
 
@@ -96,7 +92,7 @@ const verifyEmail = asyncHandler(async (req, res) => {
   if (!user) throw new ApiError([], 'User not found!', 400);
 
   if (user.isEmailValid)
-    throw new ApiError([], 'Email is already verified!', 200);
+    throw new ApiError([], 'Email is already verified!', 409);
 
   user.isEmailValid = true;
   user.emailVerificationToken = undefined;
@@ -120,7 +116,7 @@ const verifyEmail = asyncHandler(async (req, res) => {
 });
 
 const loginUser = asyncHandler(async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, role, email, password } = req.body;
 
   const user = await User.findOne({ $or: [{ username }, { email }] }).select(
     '-isEmailValid -emailVerificationToken -emailVerificationTokenExpiry -resetPasswordToken -resetPasswordTokenExpiry'
@@ -130,7 +126,7 @@ const loginUser = asyncHandler(async (req, res) => {
     throw new ApiError([{ username, email }], 'User not registered', 422);
 
   if (user.refreshToken)
-    throw new ApiError([{ username, email }], 'User already logedin', 422);
+    throw new ApiError([{ username, email }], 'User already loggedin', 422);
 
   const validPassword = await user.comparePassword(password);
 
@@ -141,7 +137,11 @@ const loginUser = asyncHandler(async (req, res) => {
       422
     );
 
+  user.userRole = role;
+
   const { accessToken, refreshToken } = await generateRefreshAccessToken(user);
+
+  await user.save({ validateBeforeSave: false });
 
   const logedInUser = await User.findById(user._id).select(
     '-password -refreshToken -isEmailValid -emailVerificationToken -emailVerificationTokenExpiry -resetPasswordToken -resetPasswordTokenExpiry'
@@ -255,8 +255,6 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
   if (!user) throw new ApiError([], 'User not Found', 400);
 
   const validPassword = await user.comparePassword(old_password);
-
-  console.log(validPassword);
 
   if (!validPassword) throw new ApiError([], 'Invalid Old Password', 400);
 

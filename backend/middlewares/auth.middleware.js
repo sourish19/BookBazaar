@@ -50,7 +50,11 @@ const verifyPermission = asyncHandler(async (req, res, next) => {
   );
 
   if (user.userRole === USER_ROLES.USER)
-    throw new ApiError([], { message: 'Unauthorized Client' }, 403);
+    throw new ApiError(
+      [],
+      { message: 'Forbidden: insufficient permissions' },
+      403
+    );
 
   next();
 });

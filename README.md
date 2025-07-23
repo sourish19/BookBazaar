@@ -1,0 +1,1 @@
+To build a backend API for an online bookstore that allows users to browse, purchase, and review books. The project simulates a lightweight e-commerce system with real-world backend design challenges.
