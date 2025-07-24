@@ -18,6 +18,7 @@ import {
   updateBookDetailsValidation,
 } from '../validators/book.validator.js';
 import validate from '../middlewares/userValidate.middleware.js';
+import upload from '../middlewares/multer.middleware.js';
 
 const router = Router();
 
@@ -32,6 +33,7 @@ router.route('/').post(
   verifyPermission,
   addBookValidation(), // Need to handle Cover Image
   validate,
+  upload.single('bookCoverImg'),
   addBooks
 ); // Add Books - Adimin Only
 router

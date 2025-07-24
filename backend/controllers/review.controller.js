@@ -63,39 +63,74 @@ const listAllBookReviews = asyncHandler(async (req, res) => {
   // Populating the 'userId' field with only the 'username'
   // This replaces the ObjectId with actual user data (only username) in a single efficient query
   // This is how it will look ---
-  //{
+  //[{
   //   comment: 'Great book',
   //   rating: 5,
   //   userId: {
   //     _id: 'userId123',
   //     username: 'john_doe'
   //   }
-  // }
+  // }]
   const bookReviews = await Reviews.find({ bookId }).populate({
     path: 'userId',
     select: 'username',
   });
 
-  if (!bookReviews || bookReviews.length === 0)
-    throw new ApiError([], { message: 'Book' });
+  const summarizedReview = bookReviews
+    .filter((user) => user.userId)
+    .map((review) => {
+      return {
+        username: review.userId?.username,
+        comment: review.comment,
+        rating: review.rating,
+      };
+    });
 
-  const summarizedReview = bookReviews.map((review) => {
-    return {
-      username: review.userId.username,
-      comment: review.comment,
-      rating: review.rating,
-    };
-  });
-
-  res
-    .status(200)
-    .json(
-      new ApiResponse(
-        200,
-        { message: 'Extracted all Reviews' },
-        summarizedReview
-      )
-    );
+  res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        message: summarizedReview.length
+          ? 'Extracted all Reviews'
+          : 'No reviews found for this book',
+      },
+      summarizedReview
+    )
+  );
 });
 
-export { addBookReview, listAllBookReviews };
+const deleteBookReview = asyncHandler(async (req, res) => {
+  const { bookId } = req.params;
+
+  const bookExists = await Books.findById(bookId).select('-createdBy');
+
+  if (!bookExists)
+    throw new ApiError([], { message: 'Book dosent exists' }, 404);
+
+  const deleteReview = await Reviews.findOneAndDelete({ bookId }, { new: true })
+    .populate({
+      path: 'bookId',
+      select: 'bookName author',
+    })
+    .select('-userId');
+
+  if (!deleteReview) throw new ApiError([], { message: 'No books found' }, 404);
+
+  const confirmDeletedReview = await Reviews.findById(deleteReview._id).select(
+    '-userId'
+  );
+
+  if (confirmDeletedReview)
+    throw new ApiError([], { message: 'Unable to Delete book' }, 500);
+
+  res.status(200).json(
+    new ApiResponse(200, { message: 'Book Review deleted successfully' }, [
+      {
+        bookname: deleteReview.bookId.bookName,
+        author: deleteReview.bookId.title,
+      },
+    ])
+  );
+});
+
+export { addBookReview, listAllBookReviews, deleteBookReview };

@@ -17,10 +17,12 @@ const userSchema = new Schema(
       type: {
         url: String,
         locaPath: String,
+        public_Id: String,
       },
       default: {
         url: `https://via.placeholder.com/200x200.png`,
         localPath: '',
+        public_Id: '',
       },
     },
     username: {

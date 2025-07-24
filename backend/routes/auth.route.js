@@ -12,6 +12,7 @@ import {
   forgotPassword,
   resetPassword,
   resendEmailVerification,
+  changeUserAvatar,
 } from '../controllers/auth.controller.js';
 import {
   userRegistrationValidation,
@@ -23,6 +24,7 @@ import {
 } from '../validators/auth.validator.js';
 import validate from '../middlewares/userValidate.middleware.js';
 import { isLoggedIn } from '../middlewares/auth.middleware.js';
+import upload from '../middlewares/multer.middleware.js';
 
 const router = Router();
 
@@ -57,5 +59,8 @@ router
     validate,
     changeCurrentPassword
   );
+router
+  .route('/change-avatar')
+  .patch(isLoggedIn, upload.single('avatar'), changeUserAvatar);
 
 export default router;

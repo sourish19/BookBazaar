@@ -46,10 +46,12 @@ const booksSchema = new Schema(
       type: {
         url: String,
         localPath: String,
+        public_Id: String,
       },
       default: {
         url: 'https://placehold.co/400',
         localPath: '',
+        public_Id: '',
       },
     },
     createdBy: {

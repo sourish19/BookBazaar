@@ -3,6 +3,7 @@ import { Router } from 'express';
 import {
   addBookReview,
   listAllBookReviews,
+  deleteBookReview,
 } from '../controllers/review.controller.js';
 import {
   isLoggedIn,
@@ -11,7 +12,7 @@ import {
 import isApiKeyValid from '../middlewares/apiKey.middleware.js';
 import {
   addBookReviewValidation,
-  listAllBookReviewValidation,
+  bookIdValidation,
 } from '../validators/review.validator.js';
 import validate from '../middlewares/userValidate.middleware.js';
 
@@ -28,9 +29,16 @@ router
   ); // Add review to a book
 router
   .route('/books/:bookId/reviews')
-  .get(listAllBookReviewValidation(), validate, listAllBookReviews); // List Reviews for a book
+  .get(bookIdValidation(), validate, listAllBookReviews); // List Reviews for a book
 router
   .route('/reviews/:id')
-  .delete(isLoggedIn, isApiKeyValid, verifyPermission); // Delete reviews
+  .delete(
+    isLoggedIn,
+    isApiKeyValid,
+    verifyPermission,
+    bookIdValidation(),
+    validate,
+    deleteBookReview
+  ); // Delete reviews
 
 export default router;

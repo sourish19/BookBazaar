@@ -16,6 +16,12 @@ export const EMAIL = {
   authPass: process.env.MAILTRAP_PASSWORD,
 };
 
+export const CLOUDINARY = {
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_CLOUD_SECRET, 
+};
+
 export const USER_ROLES = {
   ADMIN: 'ADMIN',
   USER: 'USER',

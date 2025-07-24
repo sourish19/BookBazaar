@@ -1,27 +1,31 @@
-// Need to implement CoverImage using multer and cloudinary
+import fs from 'fs';
 
 import ApiResponse from '../utils/apiResponse.util.js';
 import Books from '../models/books.model.js';
 import ApiError from '../utils/apiError.util.js';
 import asyncHandler from '../utils/asyncHandler.util.js';
+import {
+  staticFilePath,
+  localFilePath,
+  generateUniqueId,
+} from '../utils/helper.util.js';
+import cloudinary from '../utils/cloudinary.util.js';
 
 const addBooks = asyncHandler(async (req, res) => {
-  const {
-    title,
-    author,
-    genre,
-    description,
-    publishedDate,
-    price,
-    stock,
-    coverImage,
-  } = req.body;
+  const { title, author, genre, description, publishedDate, price, stock } =
+    req.body;
+  const coverImage = req.file?.filename;
+
+  if (!coverImage) throw new ApiError([], 'No book cover image found', 404);
 
   const availableBook = await Books.findOne({ title, author });
 
   // if Book found in db throw an error
-  if (availableBook)
-    throw new ApiError([], { message: 'Book already exists' }, 400);
+  if (availableBook) throw new ApiError([], 'Book already exists', 400);
+
+  const bookImgUrl = staticFilePath(req, req.file?.filename);
+  const bookLocalImgUrl = localFilePath(req, req.file?.filename);
+  const publidId = generateUniqueId('bookCoverImg');
 
   // Creates and saves in the db
   const createBook = await Books.create({
@@ -32,18 +36,46 @@ const addBooks = asyncHandler(async (req, res) => {
     publishedDate,
     price,
     stock,
+    coverImage: {
+      url: bookImgUrl || 'https://placehold.co/400',
+      localPath: bookLocalImgUrl || '',
+    },
     createdBy: req.user?._id,
   });
+
+  try {
+    const uploadResult = await cloudinary.uploader.upload(bookLocalImgUrl, {
+      public_id: publidId,
+    });
+
+createBook.coverImage = {
+    public_Id: uploadResult.public_id || '',
+    url: uploadResult.secure_url || createBook.coverImage.url,
+    localPath: '',
+  }; 
+
+    fs.unlink(bookLocalImgUrl, (err) => {
+      if (err) {
+        console.error('Unable to remove book cover image file');
+      }
+    });
+
+    await createBook.save({ validateBeforeSave: false });
+  } catch (error) {
+    console.error(
+      `Cloudinary upload failed for book "${title}":`,
+      error.message
+    );
+  }
 
   // Recheck if book is created successfully
   const createdBook = await Books.findById(createBook._id);
 
-  if (!createdBook)
-    throw new ApiError([], { message: 'Unable to add book' }, 500);
+  if (!createdBook) throw new ApiError([], 'Unable to add book', 500);
 
   //  Return the db book details for frontend to display it
   res.status(201).json(
-    new ApiResponse(201, { message: 'Book added successfully' }, [
+    new ApiResponse(201, 'Book added successfully', [
       {
         bookId: createBook._id,
         title: createBook.title,
@@ -53,7 +85,7 @@ const addBooks = asyncHandler(async (req, res) => {
         publishedDate: createBook.publishedDate,
         price: createBook.price,
         stock: createBook.stock,
-        coverImage: createBook.coverImage,
+        coverImage: createBook.coverImage.url,
       },
     ])
   );
@@ -64,8 +96,7 @@ const getBookDetails = asyncHandler(async (req, res) => {
     '-createdBy'
   );
 
-  if (!bookDetails)
-    throw new ApiError([], { message: 'Book not found' }, 404);
+  if (!bookDetails) throw new ApiError([], { message: 'Book not found' }, 404);
 
   // Destructure bookDetails
   const {
@@ -111,8 +142,7 @@ const updateBookDetails = asyncHandler(async (req, res) => {
       runValidators: true,
     }).select('-createdBy');
 
-    if (!updateBook)
-      throw new ApiError([], { message: 'Book not found' }, 404);
+    if (!updateBook) throw new ApiError([], { message: 'Book not found' }, 404);
 
     res.status(200).json(
       new ApiResponse(200, { message: 'Book updated successfully' }, [
@@ -186,19 +216,17 @@ const listAllBooks = asyncHandler(async (req, res) => {
     coverImage: book.coverImage,
   }));
 
-  res
-    .status(200)
-    .json(
-      new ApiResponse(
-        200,
-        {
-          message: books.length
-            ? `${books.length} books found.`
-            : 'No books found',
-        },
-        booksData
-      )
-    );
+  res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        message: books.length
+          ? `${books.length} books found.`
+          : 'No books found',
+      },
+      booksData
+    )
+  );
 });
 
 export {

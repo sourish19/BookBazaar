@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
+import fs from 'fs';
 
 import User from '../models/auth.model.js';
 import ApiResponse from '../utils/apiResponse.util.js';
@@ -12,6 +13,13 @@ import {
   emailVerificationMailgenContent,
   resetPasswordMailgenContent,
 } from '../utils/mail.util.js';
+import {
+  staticFilePath,
+  localFilePath,
+  generateUniqueId,
+} from '../utils/helper.util.js';
+import cloudinary from '../utils/cloudinary.util.js';
+import { error } from 'console';
 
 const cookiesOption = {
   options: {
@@ -373,6 +381,52 @@ const resendEmailVerification = asyncHandler(async (req, res) => {
   );
 });
 
+const changeUserAvatar = asyncHandler(async (req, res) => {
+  if (!req.file?.filename)
+    throw new ApiError([], 'Avatar image is required', 400);
+
+  const avatarUrl = staticFilePath(req, req.file?.filename);
+  const avatarLocalPathUrl = localFilePath(req, req.file?.filename);
+
+  const user = await User.findByIdAndUpdate(
+    req.user?._id,
+    {
+      $set: {
+        avatar: {
+          url: avatarUrl,
+          localPath: avatarLocalPathUrl,
+        },
+      },
+    },
+    { new: true }
+  );
+  if (!user) throw new ApiError([], 'User not found', 404);
+
+  const publicId = generateUniqueId('avatar');
+
+  try {
+    const uploadResult = await cloudinary.uploader.upload(avatarLocalPathUrl, {
+      public_id: publicId,
+    });
+
+    fs.unlink(avatarLocalPathUrl, (err) => {
+      console.error('Failed to remove image');
+    });
+
+    user.avatar.public_Id = uploadResult.public_id;
+
+    await user.save({ validateBeforeSave: false });
+
+    res
+      .status(200)
+      .json(
+        new ApiResponse(200, { message: 'Avatar changed successfully' }, [])
+      );
+  } catch (error) {
+    throw new ApiError(error, 'Failed to upload image', 500);
+  }
+});
+
 export {
   registerUser,
   verifyEmail,
@@ -384,4 +438,5 @@ export {
   forgotPassword,
   changeCurrentPassword,
   resendEmailVerification,
+  changeUserAvatar,
 };

@@ -16,7 +16,7 @@ const addBookReviewValidation = () => {
   ];
 };
 
-const listAllBookReviewValidation = () => {
+const bookIdValidation = () => {
   return [
     param('bookId')
       .notEmpty()
@@ -26,4 +26,4 @@ const listAllBookReviewValidation = () => {
   ];
 };
 
-export { addBookReviewValidation, listAllBookReviewValidation };
+export { addBookReviewValidation, bookIdValidation };
