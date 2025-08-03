@@ -5,6 +5,7 @@ import {
   isLoggedIn,
   verifyPermission,
 } from '../middlewares/auth.middleware.js';
+import parseBookJSON from '../middlewares/parseBook.middleware.js';
 import {
   addBooks,
   getBookDetails,
@@ -31,9 +32,10 @@ router.route('/').post(
   isLoggedIn,
   isApiKeyValid,
   verifyPermission,
+  upload.single('bookCoverImg'),
+  parseBookJSON,
   addBookValidation(), // Need to handle Cover Image
   validate,
-  upload.single('bookCoverImg'),
   addBooks
 ); // Add Books - Adimin Only
 router

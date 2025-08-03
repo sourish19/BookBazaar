@@ -1,10 +1,15 @@
 import multer from 'multer';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const storage = multer.diskStorage({
   // This storage needs public/images folder in the root directory
   // Else it will throw an error saying cannot find path public/images
   destination: function (req, file, cb) {
-    cb(null, '../public/images');
+    cb(null, path.join(__dirname, '../public/images'));
   },
   // Store file in a .png/.jpeg/.jpg format  y
   filename: function (req, file, cb) {

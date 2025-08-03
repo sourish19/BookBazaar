@@ -16,13 +16,13 @@ const userSchema = new Schema(
     avatar: {
       type: {
         url: String,
-        locaPath: String,
-        public_Id: String,
+        localPath: String,
+        publicId: String,
       },
       default: {
         url: `https://via.placeholder.com/200x200.png`,
         localPath: '',
-        public_Id: '',
+        publicId: '',
       },
     },
     username: {
@@ -31,6 +31,7 @@ const userSchema = new Schema(
       lowercase: true,
       trim: true,
       unique: true,
+      index: true,
     },
     email: {
       type: String,
@@ -83,7 +84,7 @@ userSchema.pre('save', async function (next) {
     user.password = hashedPassword;
     next();
   } catch (error) {
-    console.error('Error occures in hashing password');
+    console.error('Error occurs in hashing password');
     next();
   }
 });
@@ -101,7 +102,7 @@ userSchema.methods.comparePassword = async function (newPassword) {
 userSchema.methods.generateRandomHashedTokens = () => {
   const token = crypto.randomBytes(32).toString('hex');
   const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
-  const tokenExpiry = Date.now() + 1000 * 60 * 15; //15 min
+  const tokenExpiry = Date.now() + 1000 * 60 * 40; //40 min
   return { token, hashedToken, tokenExpiry };
 };
 

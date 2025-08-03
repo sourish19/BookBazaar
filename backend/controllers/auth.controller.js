@@ -19,7 +19,6 @@ import {
   generateUniqueId,
 } from '../utils/helper.util.js';
 import cloudinary from '../utils/cloudinary.util.js';
-import { error } from 'console';
 
 const cookiesOption = {
   options: {
@@ -132,9 +131,6 @@ const loginUser = asyncHandler(async (req, res) => {
 
   if (!user)
     throw new ApiError([{ username, email }], 'User not registered', 422);
-
-  if (user.refreshToken)
-    throw new ApiError([{ username, email }], 'User already loggedin', 422);
 
   const validPassword = await user.comparePassword(password);
 
@@ -388,6 +384,11 @@ const changeUserAvatar = asyncHandler(async (req, res) => {
   const avatarUrl = staticFilePath(req, req.file?.filename);
   const avatarLocalPathUrl = localFilePath(req, req.file?.filename);
 
+  // Check file exists before proceeding
+  if (!fs.existsSync(avatarLocalPathUrl)) {
+    throw new ApiError([], 'Uploaded file not found', 400);
+  }
+
   const user = await User.findByIdAndUpdate(
     req.user?._id,
     {
@@ -409,21 +410,29 @@ const changeUserAvatar = asyncHandler(async (req, res) => {
       public_id: publicId,
     });
 
+    // Remove local file after successful upload
     fs.unlink(avatarLocalPathUrl, (err) => {
-      console.error('Failed to remove image');
+      if (err) {
+        console.error('Failed to remove local image:', err);
+      }
     });
 
-    user.avatar.public_Id = uploadResult.public_id;
+    user.avatar.publicId = uploadResult.public_id;
+    user.avatar.url = uploadResult.secure_url;
 
     await user.save({ validateBeforeSave: false });
 
-    res
-      .status(200)
-      .json(
-        new ApiResponse(200, { message: 'Avatar changed successfully' }, [])
-      );
+    res.status(200).json(
+      new ApiResponse(200, 'Avatar changed successfully', {
+        avatar: {
+          url: user.avatar.url,
+          publicId: user.avatar.publicId,
+        },
+      })
+    );
   } catch (error) {
-    throw new ApiError(error, 'Failed to upload image', 500);
+    console.error('Cloudinary upload error:', error);
+    throw new ApiError([], 'Failed to upload image to cloud storage', 500);
   }
 });
 

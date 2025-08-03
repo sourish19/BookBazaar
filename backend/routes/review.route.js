@@ -19,7 +19,7 @@ import validate from '../middlewares/userValidate.middleware.js';
 const router = Router();
 
 router
-  .route('/books/:bookId/reviews')
+  .route('/books/:bookId/review')
   .post(
     isLoggedIn,
     isApiKeyValid,
@@ -31,11 +31,10 @@ router
   .route('/books/:bookId/reviews')
   .get(bookIdValidation(), validate, listAllBookReviews); // List Reviews for a book
 router
-  .route('/reviews/:id')
+  .route('/review/:bookId')
   .delete(
     isLoggedIn,
     isApiKeyValid,
-    verifyPermission,
     bookIdValidation(),
     validate,
     deleteBookReview

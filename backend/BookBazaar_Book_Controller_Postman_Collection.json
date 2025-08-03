@@ -1,0 +1,278 @@
+{
+  "info": {
+    "name": "BookBazaar - Book Controller API",
+    "description": "Complete API collection for BookBazaar book management endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "apiKey",
+      "value": "your-api-key-here",
+      "type": "string"
+    },
+    {
+      "key": "accessToken",
+      "value": "your-access-token-here",
+      "type": "string"
+    },
+    {
+      "key": "bookId",
+      "value": "sample-book-id-here",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "📚 Book Management",
+      "item": [
+        {
+          "name": "📖 List All Books",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/books",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "books"]
+            },
+            "description": "Get all books with optional filtering. This is an unsecured endpoint."
+          },
+          "response": []
+        },
+        {
+          "name": "📖 List All Books (with filters)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/books?genre=fiction&author=john%20doe",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "books"],
+              "query": [
+                {
+                  "key": "genre",
+                  "value": "fiction",
+                  "description": "Filter by genre"
+                },
+                {
+                  "key": "author",
+                  "value": "john doe",
+                  "description": "Filter by author"
+                }
+              ]
+            },
+            "description": "Get books with query filters. Available filters: title, author, genre, price, stock"
+          },
+          "response": []
+        },
+        {
+          "name": "📖 Get Book Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/books/{{bookId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "books", "{{bookId}}"]
+            },
+            "description": "Get detailed information about a specific book by ID. This is an unsecured endpoint."
+          },
+          "response": []
+        },
+        {
+          "name": "➕ Add New Book",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "title",
+                  "value": "The Great Gatsby",
+                  "type": "text",
+                  "description": "Book title (required)"
+                },
+                {
+                  "key": "author",
+                  "value": "f. scott fitzgerald",
+                  "type": "text",
+                  "description": "Book author (required)"
+                },
+                {
+                  "key": "genre",
+                  "value": "classic",
+                  "type": "text",
+                  "description": "Book genre (optional)"
+                },
+                {
+                  "key": "description",
+                  "value": "A story of the fabulously wealthy Jay Gatsby and his love for the beautiful Daisy Buchanan.",
+                  "type": "text",
+                  "description": "Book description (required)"
+                },
+                {
+                  "key": "publishedDate",
+                  "value": "1925-04-10",
+                  "type": "text",
+                  "description": "Publication date in YYYY-MM-DD format (required)"
+                },
+                {
+                  "key": "price",
+                  "value": "15.99",
+                  "type": "text",
+                  "description": "Book price (required, numeric)"
+                },
+                {
+                  "key": "stock",
+                  "value": "50",
+                  "type": "text",
+                  "description": "Available stock (required, numeric)"
+                },
+                {
+                  "key": "bookCoverImg",
+                  "type": "file",
+                  "description": "Book cover image file (required)"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/books",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "books"]
+            },
+            "description": "Add a new book to the system. Requires authentication and admin permissions. Upload book cover image as file."
+          },
+          "response": []
+        },
+        {
+          "name": "✏️ Update Book Details",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Book Title\",\n  \"author\": \"updated author name\",\n  \"genre\": \"updated genre\",\n  \"description\": \"Updated book description\",\n  \"publishedDate\": \"2023-01-15\",\n  \"price\": 25.99,\n  \"stock\": 75,\n  \"coverImage\": \"https://example.com/updated-cover.jpg\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/books/{{bookId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "books", "{{bookId}}"]
+            },
+            "description": "Update book details. Requires authentication and admin permissions. All fields are optional."
+          },
+          "response": []
+        },
+        {
+          "name": "🗑️ Delete Book",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/books/{{bookId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "books", "{{bookId}}"]
+            },
+            "description": "Delete a book from the system. Requires authentication and admin permissions."
+          },
+          "response": []
+        }
+      ],
+      "description": "Complete book management operations including CRUD operations"
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Pre-request script to set up common headers",
+          "if (pm.request.headers.has('x-api-key') && pm.environment.get('apiKey')) {",
+          "    pm.request.headers.get('x-api-key').value = pm.environment.get('apiKey');",
+          "}",
+          "",
+          "if (pm.request.headers.has('Authorization') && pm.environment.get('accessToken')) {",
+          "    pm.request.headers.get('Authorization').value = 'Bearer ' + pm.environment.get('accessToken');",
+          "}"
+        ]
+      }
+    }
+  ]
+}

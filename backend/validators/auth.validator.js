@@ -29,7 +29,11 @@ const userLoginValidation = () => {
     body('username').trim().notEmpty().withMessage('UserName is required'),
     body('email').trim().notEmpty().withMessage('Email is required'),
     body('password').trim().notEmpty().withMessage('Password is required'),
-    body('role').trim().notEmpty().withMessage('Role is required'),
+    body('role')
+      .trim()
+      .toUpperCase()
+      .notEmpty()
+      .withMessage('Role is required'),
   ];
 };
 

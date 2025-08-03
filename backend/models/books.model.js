@@ -17,9 +17,9 @@ const booksSchema = new Schema(
       trim: true,
     },
     genre: {
-      type: String,
+      type: [String],
       enum: AVAILABLE_BOOKS_GENRE,
-      default: BOOKS_GENRE.UNCATAGORIZED,
+      default: BOOKS_GENRE.UNCATEGORIZED,
       lowercase: true,
       trim: true,
     },
@@ -36,22 +36,24 @@ const booksSchema = new Schema(
     },
     price: {
       type: Number,
+      min: 1,
       required: true,
     },
     stock: {
       type: Number,
+      min: 1,
       required: true,
     },
     coverImage: {
       type: {
         url: String,
         localPath: String,
-        public_Id: String,
+        publicId: String,
       },
       default: {
         url: 'https://placehold.co/400',
         localPath: '',
-        public_Id: '',
+        publicId: '',
       },
     },
     createdBy: {

@@ -14,6 +14,7 @@ import cloudinary from '../utils/cloudinary.util.js';
 const addBooks = asyncHandler(async (req, res) => {
   const { title, author, genre, description, publishedDate, price, stock } =
     req.body;
+
   const coverImage = req.file?.filename;
 
   if (!coverImage) throw new ApiError([], 'No book cover image found', 404);
@@ -48,11 +49,11 @@ const addBooks = asyncHandler(async (req, res) => {
       public_id: publidId,
     });
 
-createBook.coverImage = {
-    public_Id: uploadResult.public_id || '',
-    url: uploadResult.secure_url || createBook.coverImage.url,
-    localPath: '',
-  }; 
+    createBook.coverImage = {
+      publicId: uploadResult.public_id || '',
+      url: uploadResult.secure_url || createBook.coverImage.url,
+      localPath: '',
+    };
 
     fs.unlink(bookLocalImgUrl, (err) => {
       if (err) {
@@ -175,7 +176,18 @@ const deleteBook = asyncHandler(async (req, res) => {
     new: true,
   }).select('-createdBy');
 
-  if (!findBook) throw new ApiError([], { message: 'Books not found' }, 404);
+  if (!findBook) throw new ApiError([], { message: 'Book not found' }, 404);
+
+  try {
+    const deleteBookImg = await cloudinary.uploader.destroy(
+      findBook.coverImage.publicId
+    );
+  } catch (error) {
+    console.error(
+      `Cloudinary deletion failed for book "${title} & public_Id ${findBook.coverImage.publicIdd}":`,
+      error.message
+    );
+  }
 
   res.status(200).json(
     new ApiResponse(200, { message: 'Book deleted successfully' }, [

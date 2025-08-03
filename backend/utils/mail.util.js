@@ -6,11 +6,11 @@ import { EMAIL } from './constants.util.js';
 const mailGenerator = new Mailgen({
   theme: 'default',
   product: {
-    name: 'FreeAPI',
-    link: 'https://freeapi.app',
+    name: 'BookBazar',
+    link: 'https://bookbaazar.app',
     logo: 'https://mailgen.js/img/logo.png',
     logoHeight: '30px',
-    copyright: `© ${new Date().getFullYear()} FreeAPI. All rights reserved.`,
+    copyright: `© ${new Date().getFullYear()} BookBazar. All rights reserved.`,
   },
 });
 
@@ -30,7 +30,7 @@ export const sendEmail = async (options) => {
     const emailText = mailGenerator.generatePlaintext(options.mailgenContent);
 
     const mail = {
-      from: EMAIL.emailFrom || 'mail@freeapi.app',
+      from: EMAIL.emailFrom || 'mail@BookBazar.app',
       to: options.email,
       subject: options.subject,
       text: emailText,

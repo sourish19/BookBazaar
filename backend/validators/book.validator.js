@@ -1,4 +1,5 @@
 import { body, param } from 'express-validator';
+import { AVAILABLE_BOOKS_GENRE } from '../utils/constants.util.js';
 
 const addBookValidation = () => {
   return [
@@ -12,7 +13,10 @@ const addBookValidation = () => {
       .toLowerCase()
       .notEmpty()
       .withMessage('Book author is empty'),
-    body('genre').optional().trim().toLowerCase(),
+    body('genre')
+      .isArray({ min: 1 })
+      .withMessage('Genre must be a non-empty array'),
+    body('genre.*').isString().trim().toLowerCase().isIn(AVAILABLE_BOOKS_GENRE),
     body('description')
       .trim()
       .notEmpty()
@@ -35,9 +39,6 @@ const addBookValidation = () => {
       .withMessage('Stock is empty')
       .isNumeric()
       .withMessage('Stock should be Numeric'),
-    body('coverImage')
-      .optional()
-      .trim(),
   ];
 };
 
@@ -60,7 +61,16 @@ const updateBookDetailsValidation = () => {
       .withMessage('Invalid bookId'),
     body('title').trim().toLowerCase().optional(),
     body('author').trim().toLowerCase().optional(),
-    body('genre').optional().trim().toLowerCase(),
+    body('genre')
+      .optional()
+      .isArray({ min: 1 })
+      .withMessage('Genre must be a non-empty array'),
+    body('genre.*')
+      .optional()
+      .isString()
+      .trim()
+      .toLowerCase()
+      .isIn(AVAILABLE_BOOKS_GENRE),
     body('description').trim().optional(),
     body('publishedDate')
       .trim()

@@ -19,7 +19,7 @@ export const EMAIL = {
 export const CLOUDINARY = {
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_CLOUD_SECRET, 
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 };
 
 export const USER_ROLES = {
@@ -34,6 +34,14 @@ export const BOOKS_GENRE = {
   FANTASY: 'fantasy',
   'SCI-FI': 'sci-fi',
   BIOGRAPHY: 'biography',
-  UNCATAGORIZED: 'uncatagorized',
+  UNCATEGORIZED: 'uncatagorized',
+  ADVENTURE: 'adventure',
 };
 export const AVAILABLE_BOOKS_GENRE = Object.values(BOOKS_GENRE);
+
+export const ORDER_STATUS = {
+  PENDING: 'PENDING',
+  PAID: 'PAID',
+  COMPLETED: 'COMPLETED',
+};
+export const AVAILABLE_ORDER_STATUS = Object.values(ORDER_STATUS);

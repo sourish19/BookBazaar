@@ -13,6 +13,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
 
+// Serve static files from public/images directory
+app.use('/images', express.static('public/images'));
+
 app.use('/api/v1/auth', userRoute);
 app.use('/api/v1/books', bookRoute);
 app.use('/api/v1', reviewsRoute);

@@ -107,14 +107,13 @@ const deleteBookReview = asyncHandler(async (req, res) => {
   if (!bookExists)
     throw new ApiError([], { message: 'Book dosent exists' }, 404);
 
-  const deleteReview = await Reviews.findOneAndDelete({ bookId }, { new: true })
-    .populate({
-      path: 'bookId',
-      select: 'bookName author',
-    })
-    .select('-userId');
+  const deleteReview = await Reviews.findOneAndDelete(
+    { bookId, userId: req.user },
+    { new: true }
+  ).populate('bookId', 'bookName author');
 
-  if (!deleteReview) throw new ApiError([], { message: 'No books found' }, 404);
+  if (!deleteReview)
+    throw new ApiError([], { message: 'No book review found' }, 404);
 
   const confirmDeletedReview = await Reviews.findById(deleteReview._id).select(
     '-userId'
@@ -126,8 +125,10 @@ const deleteBookReview = asyncHandler(async (req, res) => {
   res.status(200).json(
     new ApiResponse(200, { message: 'Book Review deleted successfully' }, [
       {
-        bookname: deleteReview.bookId.bookName,
-        author: deleteReview.bookId.title,
+        title: deleteReview.bookId.title,
+        author: deleteReview.bookId.author,
+        comment: deleteReview.comment,
+        rating: deleteReview.rating,
       },
     ])
   );
