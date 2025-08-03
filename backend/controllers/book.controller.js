@@ -55,6 +55,8 @@ const addBooks = asyncHandler(async (req, res) => {
       localPath: '',
     };
 
+    console.log(bookLocalImgUrl);
+
     fs.unlink(bookLocalImgUrl, (err) => {
       if (err) {
         console.error('Unable to remove book cover image file');

@@ -1,0 +1,718 @@
+{
+  "info": {
+    "name": "BookBazaar - Complete API Collection",
+    "description": "Complete API collection for BookBazaar backend including auth, books, reviews, health check, and API key management",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "apiKey",
+      "value": "your-api-key-here",
+      "type": "string"
+    },
+    {
+      "key": "accessToken",
+      "value": "your-access-token-here",
+      "type": "string"
+    },
+    {
+      "key": "bookId",
+      "value": "sample-book-id-here",
+      "type": "string"
+    },
+    {
+      "key": "emailVerificationToken",
+      "value": "your-email-verification-token-here",
+      "type": "string"
+    },
+    {
+      "key": "resetPasswordToken",
+      "value": "your-reset-password-token-here",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "health"]
+            },
+            "description": "Check if the server is running successfully"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"Password123!\",\n  \"confirmPassword\": \"Password123!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "register"]
+            },
+            "description": "Register a new user account"
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Email",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/verify-email/{{emailVerificationToken}}",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "verify-email",
+                "{{emailVerificationToken}}"
+              ]
+            },
+            "description": "Verify user email with token"
+          },
+          "response": []
+        },
+        {
+          "name": "Login User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"Password123!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "login"]
+            },
+            "description": "Login with email and password"
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Access Token",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"your-refresh-token-here\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/refresh-access-token",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "refresh-access-token"]
+            },
+            "description": "Refresh access token using refresh token"
+          },
+          "response": []
+        },
+        {
+          "name": "Resend Email Verification",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john.doe@example.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/resend-email-verification",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "resend-email-verification"]
+            },
+            "description": "Resend email verification link"
+          },
+          "response": []
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john.doe@example.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/forgot-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "forgot-password"]
+            },
+            "description": "Send password reset email"
+          },
+          "response": []
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"password\": \"NewPassword123!\",\n  \"confirmPassword\": \"NewPassword123!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/reset-password/{{resetPasswordToken}}",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "reset-password",
+                "{{resetPasswordToken}}"
+              ]
+            },
+            "description": "Reset password using reset token"
+          },
+          "response": []
+        },
+        {
+          "name": "Generate API Key",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/api-key",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "api-key"]
+            },
+            "description": "Generate API key for authenticated user"
+          },
+          "response": []
+        },
+        {
+          "name": "Get User Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "me"]
+            },
+            "description": "Get current user profile information"
+          },
+          "response": []
+        },
+        {
+          "name": "Change Current Password",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"oldPassword\": \"CurrentPassword123!\",\n  \"newPassword\": \"NewPassword123!\",\n  \"confirmPassword\": \"NewPassword123!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/change-current-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "change-current-password"]
+            },
+            "description": "Change user's current password"
+          },
+          "response": []
+        },
+        {
+          "name": "Change User Avatar",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "avatar",
+                  "type": "file",
+                  "description": "User avatar image file"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/change-avatar",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "change-avatar"]
+            },
+            "description": "Upload and change user avatar"
+          },
+          "response": []
+        },
+        {
+          "name": "Logout User",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "logout"]
+            },
+            "description": "Logout user and invalidate tokens"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "📚 Book Management",
+      "item": [
+        {
+          "name": "List All Books",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/books",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "books"]
+            },
+            "description": "Get all books with optional filtering. This is an unsecured endpoint."
+          },
+          "response": []
+        },
+        {
+          "name": "List All Books (with filters)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/books?genre=fiction&author=john%20doe",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "books"],
+              "query": [
+                {
+                  "key": "genre",
+                  "value": "fiction",
+                  "description": "Filter by genre"
+                },
+                {
+                  "key": "author",
+                  "value": "john doe",
+                  "description": "Filter by author"
+                }
+              ]
+            },
+            "description": "Get books with query filters. Available filters: title, author, genre, price, stock"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Book Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/books/{{bookId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "books", "{{bookId}}"]
+            },
+            "description": "Get detailed information about a specific book by ID. This is an unsecured endpoint."
+          },
+          "response": []
+        },
+        {
+          "name": "Add New Book",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "title",
+                  "value": "The Great Gatsby",
+                  "type": "text",
+                  "description": "Book title (required)"
+                },
+                {
+                  "key": "author",
+                  "value": "f. scott fitzgerald",
+                  "type": "text",
+                  "description": "Book author (required)"
+                },
+                {
+                  "key": "genre",
+                  "value": "classic",
+                  "type": "text",
+                  "description": "Book genre (optional)"
+                },
+                {
+                  "key": "description",
+                  "value": "A story of the fabulously wealthy Jay Gatsby and his love for the beautiful Daisy Buchanan.",
+                  "type": "text",
+                  "description": "Book description (required)"
+                },
+                {
+                  "key": "publishedDate",
+                  "value": "1925-04-10",
+                  "type": "text",
+                  "description": "Publication date in YYYY-MM-DD format (required)"
+                },
+                {
+                  "key": "price",
+                  "value": "15.99",
+                  "type": "text",
+                  "description": "Book price (required, numeric)"
+                },
+                {
+                  "key": "stock",
+                  "value": "50",
+                  "type": "text",
+                  "description": "Available stock (required, numeric)"
+                },
+                {
+                  "key": "bookCoverImg",
+                  "type": "file",
+                  "description": "Book cover image file (required)"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/books",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "books"]
+            },
+            "description": "Add a new book to the system. Requires authentication and admin permissions. Upload book cover image as file."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Book Details",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Book Title\",\n  \"author\": \"updated author name\",\n  \"genre\": \"updated genre\",\n  \"description\": \"Updated book description\",\n  \"publishedDate\": \"2023-01-15\",\n  \"price\": 25.99,\n  \"stock\": 75,\n  \"coverImage\": \"https://example.com/updated-cover.jpg\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/books/{{bookId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "books", "{{bookId}}"]
+            },
+            "description": "Update book details. Requires authentication and admin permissions. All fields are optional."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Book",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/books/{{bookId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "books", "{{bookId}}"]
+            },
+            "description": "Delete a book from the system. Requires authentication and admin permissions."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "⭐ Reviews",
+      "item": [
+        {
+          "name": "Add Book Review",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rating\": 5,\n  \"comment\": \"Excellent book! Highly recommended.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/books/{{bookId}}/review",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "books", "{{bookId}}", "review"]
+            },
+            "description": "Add a review to a specific book. Requires authentication."
+          },
+          "response": []
+        },
+        {
+          "name": "List All Book Reviews",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/books/{{bookId}}/reviews",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "books", "{{bookId}}", "reviews"]
+            },
+            "description": "Get all reviews for a specific book. This is an unsecured endpoint."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Book Review",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/review/{{bookId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "review", "{{bookId}}"]
+            },
+            "description": "Delete a review for a specific book. Requires authentication and ownership of the review."
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Pre-request script to set up common headers",
+          "if (pm.request.headers.has('x-api-key') && pm.environment.get('apiKey')) {",
+          "    pm.request.headers.get('x-api-key').value = pm.environment.get('apiKey');",
+          "}",
+          "",
+          "if (pm.request.headers.has('Authorization') && pm.environment.get('accessToken')) {",
+          "    pm.request.headers.get('Authorization').value = 'Bearer ' + pm.environment.get('accessToken');",
+          "}"
+        ]
+      }
+    }
+  ]
+}
