@@ -8,13 +8,18 @@ import {
   clearCart,
   removeItemFromCart,
 } from '../controllers/cart.controller.js';
-import { addToCartValidation } from '../validators/cart.validator.js';
+import {
+  addToCartValidation,
+  validateCartIdParam,
+} from '../validators/cart.validator.js';
 import validate from '../middlewares/validationError.middleware.js';
 
 const router = Router();
 
 // AUTHENTICATED ROUTES
-router.route('/get-cart-items').get(isLoggedIn, isApiKeyValid, getUserCart); // Get all cart Items
+router
+  .route('/get-cart-items/:cartId')
+  .get(isLoggedIn, isApiKeyValid, validateCartIdParam(), validate, getUserCart); // Get all cart Items
 router
   .route('/add-cart-item')
   .post(
@@ -25,8 +30,14 @@ router
     addItemToCart
   ); // Add a Item to cart
 router
-  .route('/delete-cart-items')
-  .delete(isLoggedIn, isApiKeyValid, removeItemFromCart); // Delete Item/ Item quantity from cart
+  .route('/delete-cart-item/:cartId')
+  .delete(
+    isLoggedIn,
+    isApiKeyValid,
+    validateCartIdParam(),
+    validate,
+    removeItemFromCart
+  ); // Delete Item from cart
 router.route('/delete-cart').delete(isLoggedIn, isApiKeyValid, clearCart); // Delete entire cart Items
 
 export default router;

@@ -32,67 +32,66 @@ const addItemToCart = asyncHandler(async (req, res) => {
 
   const totalAmount = calculateTotalAmount(validItemsWithSubtotal);
 
-  const newCart = await Cart.create({
-    userId: req.user._id,
-    books: validItemsWithSubtotal,
-    bill: totalAmount,
-  });
+  const newCart = await Cart.create(
+    {
+      userId: req.user._id,
+      books: validItemsWithSubtotal,
+      bill: totalAmount,
+    },
+    { new: true }
+  );
 
   res.status(201).json(
     new ApiResponse(201, 'Items added to cart successfully', {
+      cartId: newCart._id,
       addedItems: validItemsWithSubtotal,
       invalidItems,
     })
   );
 });
 
-const getUserCart = asyncHandler(async (req, res) => {});
+const getUserCart = asyncHandler(async (req, res) => {
+  const userCart = await Cart.findOne({
+    _id: req.params?.cartId,
+    userId: req.user?._id,
+  }).select('-userId');
 
-const clearCart = asyncHandler(async (req, res) => {});
+  if (!userCart) throw new ApiError([], 'User cart not found', 403);
+
+  res
+    .status(200)
+    .json(
+      new ApiResponse(200, 'Fetched User Cart Successfully', [
+        {
+          cartId: userCart._id,
+          items: userCart.books,
+          totalAmount: userCart.bill,
+        },
+      ])
+    );
+});
+
+const clearCart = asyncHandler(async (req, res) => {
+  const deleteUserCart = await Cart.findOneAndDelete({
+    _id: req.params?.cartId,
+    userId: req.user?._id,
+  }).select('-userId');
+
+  if (!deleteUserCart) throw new ApiError([], 'User cart not found', 403);
+
+  res
+    .status(200)
+    .json(
+      new ApiResponse(200, 'User Cart successfully deleted', [
+        {
+          cartId: deleteUserCart._id,
+          items: deleteUserCart.books,
+          totalAmount: deleteUserCart.bill,
+        },
+      ])
+    );
+});
 
 const removeItemFromCart = asyncHandler(async (req, res) => {});
 
 export { addItemToCart, getUserCart, clearCart, removeItemFromCart };
-
-/*  
---- addToCart functionality 
-    User click on add to cart in one Item 
-    Item goes to cart with only quantity by default is 1 
-
-    Anybody can bypass frontend and can change price or bill so it is not secure or required to send these teo data 
-
-    Same way user clicks on multiple Items and also increases the quantity 
-    Frontend will limit the amount of quantity based on the quantity displayed in the frontend -- not accurate, need to also check in Backend
-    if book not found throw error
-
-    userId will be in cookies or api key in headers 
-    frontend will send the data like this 
-        {
-            requestedBooks:[{
-                bookId: 123456ABCD,
-                quantity: 5
-            },
-            {
-                bookId: 123456KLZX,
-                quantity: 1
-            },
-            {
-                bookId: 123456OPAS,
-                quantity: 3
-            }]  
-        }
-    Backend will check the stock if there is any diff the will throw err 
-    And it will calculate the bill and will send the response 
-    If there is diff b/w frontend bill & backend bill -- then frontend will replace the data which was received from backend 
-
---- Partial Accept for stock flow
-    Get the bookId 
-    Check If all book exists 
-        If all book exists continue 
-        No Book exists - throw error 
-        If only one book exists but rest dosent exists -- partially continue
-            Now use filter to check which bookId != req.body.books.bookId -- return those bookId which is not there in the backend or which stock is not there 
-            
-            -- Use Map for better optimization 
-
-*/
