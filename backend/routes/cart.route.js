@@ -8,12 +8,22 @@ import {
   clearCart,
   removeItemFromCart,
 } from '../controllers/cart.controller.js';
+import { addToCartValidation } from '../validators/cart.validator.js';
+import validate from '../middlewares/validationError.middleware.js';
 
 const router = Router();
 
 // AUTHENTICATED ROUTES
 router.route('/get-cart-items').get(isLoggedIn, isApiKeyValid, getUserCart); // Get all cart Items
-router.route('/add-cart-item').post(isLoggedIn, isApiKeyValid, addItemToCart); // Add a Item to cart
+router
+  .route('/add-cart-item')
+  .post(
+    isLoggedIn,
+    isApiKeyValid,
+    addToCartValidation(),
+    validate,
+    addItemToCart
+  ); // Add a Item to cart
 router
   .route('/delete-cart-items')
   .delete(isLoggedIn, isApiKeyValid, removeItemFromCart); // Delete Item/ Item quantity from cart

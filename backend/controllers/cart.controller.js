@@ -1,33 +1,49 @@
-import CartItems from '../models/cart.model.js';
+import Cart from '../models/cart.model.js';
 import Books from '../models/books.model.js';
 import asyncHandler from '../utils/asyncHandler.util.js';
 import ApiError from '../utils/apiError.util.js';
+import ApiResponse from '../utils/apiResponse.util.js';
+import {
+  getInvalidItems,
+  calculateItemSubtotals,
+  calculateTotalAmount,
+} from '../utils/helper.util.js';
 
 const addItemToCart = asyncHandler(async (req, res) => {
-  const { userId, requestedBooks } = req.body;
+  const { cartItems } = req.body;
 
-  if(userId !== req.user?._id)
-    throw new ApiError([],"Invalid User",404)
+  const bookIds = cartItems.map((item) => item.bookId);
 
-  const bookIds = requestedBooks.map((ids) => {
-    return ids.bookId;
+  // Find all the books based on the id which are in the bookIds array, If any bookId dosent exists in the db then it will skip it
+  const fetchedBooks = await Books.find({ _id: { $in: bookIds } }).select(
+    'stock price'
+  );
+  if (!fetchedBooks) throw new ApiError([], 'No Books found', 404);
+
+  // Map each bookId with the book object from the db
+  const bookMap = new Map();
+  fetchedBooks.forEach((book) => bookMap.set(book._id.toString(), book));
+
+  // Get all the invalidBooks
+  const invalidItems = getInvalidItems(cartItems, bookMap);
+
+  // Get individual book subTotal
+  const validItemsWithSubtotal = calculateItemSubtotals(cartItems, bookMap);
+
+  const totalAmount = calculateTotalAmount(validItemsWithSubtotal);
+
+  const newCart = await Cart.create({
+    userId: req.user._id,
+    books: validItemsWithSubtotal,
+    bill: totalAmount,
   });
 
-  const booksFromDb = await Books.find({ _id: { $in: bookIds } }).select(
-    'stock price'
-  ); // Find all the books based on the id which are in the bookIds array
-
-  if(!booksFromDb)
-    throw new ApiError([],"No Books found",404)
-
-  const mapBooks = new Map()
-
-  booksFromDb.map(item=>{
-    mapBooks.set(item._id.toString(),item)
-  })
-
-// *****  Complete this later *****
-
+  res.status(201).json(
+    new ApiResponse(201, 'Items added to cart successfully', {
+      addedItems: validItemsWithSubtotal,
+      invalidItems,
+    })
+  );
 });
 
 const getUserCart = asyncHandler(async (req, res) => {});
@@ -49,9 +65,9 @@ export { addItemToCart, getUserCart, clearCart, removeItemFromCart };
     Frontend will limit the amount of quantity based on the quantity displayed in the frontend -- not accurate, need to also check in Backend
     if book not found throw error
 
+    userId will be in cookies or api key in headers 
     frontend will send the data like this 
         {
-            userId: 123456,
             requestedBooks:[{
                 bookId: 123456ABCD,
                 quantity: 5
@@ -75,7 +91,6 @@ export { addItemToCart, getUserCart, clearCart, removeItemFromCart };
         If all book exists continue 
         No Book exists - throw error 
         If only one book exists but rest dosent exists -- partially continue
-            Find all the books from Books db -- Book.find() & also use $gte for quantity 
             Now use filter to check which bookId != req.body.books.bookId -- return those bookId which is not there in the backend or which stock is not there 
             
             -- Use Map for better optimization 
