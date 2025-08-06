@@ -14,7 +14,7 @@ const placeOrder = asyncHandler(async (req, res) => {
 
   const prevPendingUserOrder = await Order.findOne({
     userId: req.body.user?._id,
-    orderStatus: 'pending',
+    paymentStatus: 'pending',
   });
 
   if (prevPendingUserOrder)
@@ -46,7 +46,7 @@ const placeOrder = asyncHandler(async (req, res) => {
   const totalAmount = calculateTotalAmount(validItemsWithSubtotal);
 
   const createOrder = await Order.create({
-    userId: req.body.user?._id,
+    userId: req.user?._id,
     totalAmount,
     items: validItemsWithSubtotal,
     itemCount: items.length,
@@ -62,9 +62,50 @@ const placeOrder = asyncHandler(async (req, res) => {
   );
 });
 
-const listOrders = asyncHandler(async (req, res) => {});
+const listOrders = asyncHandler(async (req, res) => {
+  const userOrders = await Order.find({ userId: req.body.user?._id })
+    .sort({ createdAt: -1 }) //createdAt: -1 will return recent orders
+    .select('-userId -paymentId');
 
-const getOrderDetails = asyncHandler(async (req, res) => {});
+  if (!userOrders || userOrders.length === 0) {
+    throw new ApiError([], 'User orders not found', 404);
+  }
+
+  res.status(200).json(
+    new ApiResponse(
+      200,
+      'Fetched User Orders Successfully',
+      userOrders.map((item) => {
+        return {
+          orderId: item._id,
+          itemCount: item.itemCount,
+          items: item.items,
+          shippingDetails: item.shippingDetails,
+          paymentStatus: item.paymentStatus,
+        };
+      })
+    )
+  );
+});
+
+const getOrderDetails = asyncHandler(async (req, res) => {
+  const userOrder = await Order.findOne({
+    _id: req.params?.orderId,
+    userId: req.user?._id,
+  }).select('-userId -paymentId');
+
+  if (!userOrder) throw new ApiError([], 'No order found', 404);
+
+  res.status(200).json(
+    new ApiResponse(200, 'Fetched User Order Successfully', {
+      orderId: userOrder._id,
+      itemCount: userOrder.itemCount,
+      items: userOrder.items,
+      shippingDetails: userOrder.shippingDetails,
+      paymentStatus: userOrder.paymentStatus,
+    })
+  );
+});
 
 const createRazorPayOrder = asyncHandler(async (req, res) => {
   const order = await Order.findById(req.body?.orderId).select('-userId');

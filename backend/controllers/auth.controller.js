@@ -18,7 +18,7 @@ import {
   localFilePath,
   generateUniqueId,
 } from '../utils/helper.util.js';
-import cloudinary from '../utils/cloudinary.util.js';
+import cloudinary from '../config/cloudinary.config.js'
 
 const cookiesOption = {
   options: {

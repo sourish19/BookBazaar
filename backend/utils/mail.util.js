@@ -38,10 +38,10 @@ export const sendEmail = async (options) => {
     };
 
     await transporter.sendMail(mail);
-    console.log('✅ Email sent to:', options.email);
+    console.log('Email sent to:', options.email);
   } catch (error) {
     // Fail silently
-    console.error('❌ Email service failed:', error.message);
+    console.error('Email service failed:', error.message);
   }
 };
 

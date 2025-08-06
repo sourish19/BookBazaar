@@ -60,13 +60,11 @@ const orderSchema = new Schema(
       enum: AVAILABLE_ORDER_STATUS,
       default: ORDER_STATUS.PENDING,
     },
-    paymentInfo: {
-      paymentId: { type: Schema.Types.ObjectId, ref: 'Payment' },
-      paymentStatus: {
-        type: String,
-        enum: AVAILABLE_PAYMENT_STATUS,
-        default: PAYMENT_STATUS.PENDING,
-      },
+    paymentId: { type: Schema.Types.ObjectId, ref: 'Payment' },
+    paymentStatus: {
+      type: String,
+      enum: AVAILABLE_PAYMENT_STATUS,
+      default: PAYMENT_STATUS.PENDING,
     },
   },
   { timestamps: true }

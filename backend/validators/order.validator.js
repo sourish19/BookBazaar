@@ -1,4 +1,4 @@
-import { body } from 'express-validator';
+import { body, param } from 'express-validator';
 
 const placeOrderValidator = () => {
   return [
@@ -50,4 +50,14 @@ const placeOrderValidator = () => {
   ];
 };
 
-export { placeOrderValidator };
+const orderIdValidation = () => {
+  return [
+    param('orderId')
+      .notEmpty()
+      .withMessage('orderId is required')
+      .isMongoId()
+      .withMessage('Invalid orderId'),
+  ];
+};
+
+export { placeOrderValidator, orderIdValidation };
