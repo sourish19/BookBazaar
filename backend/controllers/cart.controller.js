@@ -58,17 +58,15 @@ const getUserCart = asyncHandler(async (req, res) => {
 
   if (!userCart) throw new ApiError([], 'User cart not found', 403);
 
-  res
-    .status(200)
-    .json(
-      new ApiResponse(200, 'Fetched User Cart Successfully', [
-        {
-          cartId: userCart._id,
-          items: userCart.books,
-          totalAmount: userCart.bill,
-        },
-      ])
-    );
+  res.status(200).json(
+    new ApiResponse(200, 'Fetched User Cart Successfully', [
+      {
+        cartId: userCart._id,
+        items: userCart.books,
+        totalAmount: userCart.bill,
+      },
+    ])
+  );
 });
 
 const clearCart = asyncHandler(async (req, res) => {
@@ -79,19 +77,38 @@ const clearCart = asyncHandler(async (req, res) => {
 
   if (!deleteUserCart) throw new ApiError([], 'User cart not found', 403);
 
-  res
-    .status(200)
-    .json(
-      new ApiResponse(200, 'User Cart successfully deleted', [
-        {
-          cartId: deleteUserCart._id,
-          items: deleteUserCart.books,
-          totalAmount: deleteUserCart.bill,
-        },
-      ])
-    );
+  res.status(200).json(
+    new ApiResponse(200, 'User Cart successfully deleted', [
+      {
+        cartId: deleteUserCart._id,
+        items: deleteUserCart.books,
+        totalAmount: deleteUserCart.bill,
+      },
+    ])
+  );
 });
 
-const removeItemFromCart = asyncHandler(async (req, res) => {});
+const removeItemFromCart = asyncHandler(async (req, res) => {
+  const userCartItem = await Cart.findOneAndUpdate(
+    {
+      _id: req.params?.cartId,
+      userId: req.user?._id,
+    },
+    { $pull: { books: { bookId: req.body?.bookId } } },
+    { new: true }
+  ).select('-userId');
+
+  if (!userCartItem) throw new ApiError([], 'User cart Item not found', 403);
+
+  res.status(200).json(
+    new ApiResponse(200, 'User Cart Item successfully deleted', [
+      {
+        cartId: userCartItem._id,
+        items: userCartItem.books,
+        totalAmount: userCartItem.bill,
+      },
+    ])
+  );
+});
 
 export { addItemToCart, getUserCart, clearCart, removeItemFromCart };

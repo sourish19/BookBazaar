@@ -31,13 +31,15 @@ router
   ); // Add a Item to cart
 router
   .route('/delete-cart-item/:cartId')
+  .delete(isLoggedIn, isApiKeyValid, removeItemFromCart); // Delete Item from cart
+router
+  .route('/delete-cart/:cartId')
   .delete(
     isLoggedIn,
     isApiKeyValid,
     validateCartIdParam(),
     validate,
-    removeItemFromCart
-  ); // Delete Item from cart
-router.route('/delete-cart').delete(isLoggedIn, isApiKeyValid, clearCart); // Delete entire cart Items
+    clearCart
+  ); // Delete entire cart Items
 
 export default router;

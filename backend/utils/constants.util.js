@@ -22,6 +22,11 @@ export const CLOUDINARY = {
   api_secret: process.env.CLOUDINARY_API_SECRET,
 };
 
+export const RAZORPAY = {
+  key_id: process.env.RAZORPAY_API_KEY_ID,
+  key_secret: process.env.RAZORPAY_API_KEY_SECRET,
+};
+
 export const USER_ROLES = {
   ADMIN: 'ADMIN',
   USER: 'USER',
@@ -40,8 +45,17 @@ export const BOOKS_GENRE = {
 export const AVAILABLE_BOOKS_GENRE = Object.values(BOOKS_GENRE);
 
 export const ORDER_STATUS = {
-  PENDING: 'PENDING',
-  PAID: 'PAID',
-  COMPLETED: 'COMPLETED',
+  PENDING: 'pending',
+  CONFIRMED: 'confirmed',
+  SHIPPED: 'shipped',
+  DELIVERED: 'delivered',
+  CANCELLED: 'cancelled',
 };
 export const AVAILABLE_ORDER_STATUS = Object.values(ORDER_STATUS);
+
+export const PAYMENT_STATUS = {
+  PENDING: 'pending',
+  PAID: 'paid',
+  FAILED: 'failed',
+};
+export const AVAILABLE_PAYMENT_STATUS = Object.values(PAYMENT_STATUS);
