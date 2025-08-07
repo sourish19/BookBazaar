@@ -9,7 +9,7 @@ import {
   localFilePath,
   generateUniqueId,
 } from '../utils/helper.util.js';
-import cloudinary from '../config/cloudinary.config.js'
+import cloudinary from '../config/cloudinary.config.js';
 
 const addBooks = asyncHandler(async (req, res) => {
   const { title, author, genre, description, publishedDate, price, stock } =

@@ -5,10 +5,7 @@ import {
   listAllBookReviews,
   deleteBookReview,
 } from '../controllers/review.controller.js';
-import {
-  isLoggedIn,
-  verifyPermission,
-} from '../middlewares/auth.middleware.js';
+import { isLoggedIn } from '../middlewares/auth.middleware.js';
 import isApiKeyValid from '../middlewares/apiKey.middleware.js';
 import {
   addBookReviewValidation,
@@ -19,7 +16,7 @@ import validate from '../middlewares/userValidate.middleware.js';
 const router = Router();
 
 router
-  .route('/books/:bookId/review')
+  .route('/books/add-review/:bookId')
   .post(
     isLoggedIn,
     isApiKeyValid,
@@ -28,10 +25,10 @@ router
     addBookReview
   ); // Add review to a book
 router
-  .route('/books/:bookId/reviews')
+  .route('/books/list-reviews/:bookId')
   .get(bookIdValidation(), validate, listAllBookReviews); // List Reviews for a book
 router
-  .route('/review/:bookId')
+  .route('/books/delete-review/:bookId')
   .delete(
     isLoggedIn,
     isApiKeyValid,

@@ -17,11 +17,11 @@ import validate from '../middlewares/validationError.middleware.js';
 const router = Router();
 
 router
-  .route('/orders/place-order')
+  .route('/place-order')
   .post(isLoggedIn, isApiKeyValid, placeOrderValidator(), validate, placeOrder); // Place an order
-router.route('/orders/list-orders').get(isLoggedIn, isApiKeyValid, listOrders); // list users all order
+router.route('/list-orders').get(isLoggedIn, isApiKeyValid, listOrders); // list users all order
 router
-  .route('/orders/order-details/:orderId')
+  .route('/order-details/:orderId')
   .get(
     isLoggedIn,
     isApiKeyValid,

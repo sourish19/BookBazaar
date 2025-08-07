@@ -47,7 +47,7 @@ const placeOrder = asyncHandler(async (req, res) => {
 
   const createOrder = await Order.create({
     userId: req.user?._id,
-    totalAmount,
+    totalAmount: totalAmount,
     items: validItemsWithSubtotal,
     itemCount: items.length,
     shippingDetails: req.body?.shippingDetails,
@@ -107,11 +107,7 @@ const getOrderDetails = asyncHandler(async (req, res) => {
   );
 });
 
-const createRazorPayOrder = asyncHandler(async (req, res) => {
-  const order = await Order.findById(req.body?.orderId).select('-userId');
-});
-
-export { placeOrder, listOrders, getOrderDetails, createRazorPayOrder };
+export { placeOrder, listOrders, getOrderDetails };
 
 /*
     Order First, then Payment approach

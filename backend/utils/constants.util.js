@@ -57,5 +57,6 @@ export const PAYMENT_STATUS = {
   PENDING: 'pending',
   PAID: 'paid',
   FAILED: 'failed',
+  CREATED: 'created',
 };
 export const AVAILABLE_PAYMENT_STATUS = Object.values(PAYMENT_STATUS);
