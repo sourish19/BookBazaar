@@ -6,7 +6,6 @@ import {
   placeOrder,
   listOrders,
   getOrderDetails,
-  createRazorPayOrder,
 } from '../controllers/order.controller.js';
 import {
   placeOrderValidator,
@@ -29,8 +28,5 @@ router
     validate,
     getOrderDetails
   ); // Order details
-
-// RAZORPAY ROUTES
-router.route('/razorpay/orders').post(createRazorPayOrder); // Create razorpay order
 
 export default router;

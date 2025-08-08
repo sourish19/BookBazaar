@@ -17,32 +17,32 @@ const placeOrderValidator = () => {
       .bail()
       .isInt({ min: 1 })
       .withMessage('quantity must be a positive integer'),
-    body('items.*.shippingDetails.addressLine1')
+    body('shippingDetails.addressLine1')
       .trim()
       .notEmpty()
       .withMessage('Address Line 1 is required'),
-    body('items.*.shippingDetails.addressLine2')
+    body('shippingDetails.addressLine2')
       .optional()
       .trim()
       .isString()
       .withMessage('Address Line 2 must be a string'),
-    body('items.*.shippingDetails.city')
+    body('shippingDetails.city')
       .trim()
       .notEmpty()
       .withMessage('City is required'),
-    body('items.*.shippingDetails.state')
+    body('shippingDetails.state')
       .trim()
       .notEmpty()
       .withMessage('State is required'),
-    body('items.*.shippingDetails.postalCode')
+    body('shippingDetails.postalCode')
       .trim()
       .notEmpty()
       .withMessage('Postal Code is required'),
-    body('items.*.shippingDetails.country')
+    body('shippingDetails.country')
       .trim()
       .notEmpty()
       .withMessage('Country is required'),
-    body('items.*.shippingDetails.phoneNumber')
+    body('shippingDetails.phoneNumber')
       .notEmpty()
       .withMessage('Phone Number is required')
       .isInt()

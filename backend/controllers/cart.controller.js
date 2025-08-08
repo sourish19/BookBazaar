@@ -100,12 +100,21 @@ const removeItemFromCart = asyncHandler(async (req, res) => {
 
   if (!userCartItem) throw new ApiError([], 'User cart Item not found', 403);
 
+  // Recalculate total amount after removing item
+  const newTotalAmount = calculateTotalAmount(userCartItem.books);
+  
+  const updatedCart = await Cart.findByIdAndUpdate(
+    userCartItem._id,
+    { bill: newTotalAmount },
+    { new: true }
+  ).select('-userId');
+
   res.status(200).json(
     new ApiResponse(200, 'User Cart Item successfully deleted', [
       {
-        cartId: userCartItem._id,
-        items: userCartItem.books,
-        totalAmount: userCartItem.bill,
+        cartId: updatedCart._id,
+        items: updatedCart.books,
+        totalAmount: updatedCart.bill,
       },
     ])
   );

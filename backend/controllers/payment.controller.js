@@ -69,7 +69,7 @@ const verifyRazorpayPayment = asyncHandler(async (req, res) => {
       },
     },
     { new: true }
-  );
+  ).select("");
 
   if (!paymentSuccess) {
     throw new ApiError([], 'Payment record not found or update failed', 404);
@@ -85,15 +85,55 @@ const verifyRazorpayPayment = asyncHandler(async (req, res) => {
       orderStatus: ORDER_STATUS.CONFIRMED,
     },
     { new: true }
-  );
+  ).select('-userId -paymentId');
 
-    if (!updateUserOrder) {
+  if (!updateUserOrder) {
     throw new ApiError([], 'User order record not found or update failed', 404);
   }
 
   res.status(200).json(new ApiResponse(200, 'Payment success', {}));
 });
 
-const failedRazorpayPayment = asyncHandler(async (req, res) => {});
+const failedRazorpayPayment = asyncHandler(async (req, res) => {
+  const { orderId, reason, paymentInfo } = req.body;
+
+  const userOrder = await Order.findOneAndUpdate(
+    { _id: orderId, userId: req.user?._id },
+    {
+      $set: {
+        orderStatus: ORDER_STATUS.CANCELLED,
+        paymentStatus: PAYMENT_STATUS.FAILED,
+      },
+    },
+    { new: true }
+  );
+
+  if (!userOrder) {
+    throw new ApiError([], 'Order not found or update failed', 400);
+  }
+
+  const failedPayment = await Payment.findOneAndUpdate(
+    {
+      userId: req.user?._id,
+      orderId: orderId, 
+    },
+    {
+      $set: {
+        status: PAYMENT_STATUS.FAILED,
+        errorReason: reason || 'Payment failed by user or gateway',
+      },
+    },
+    { new: true }
+  );
+
+  if (!failedPayment) {
+    throw new ApiError([], 'Payment not found or update failed', 400);
+  }
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, 'Payment marked as failed', {}));
+});
+
 
 export { createRazorPayOrder, verifyRazorpayPayment, failedRazorpayPayment };

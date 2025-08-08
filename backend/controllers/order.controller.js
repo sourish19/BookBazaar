@@ -13,7 +13,7 @@ const placeOrder = asyncHandler(async (req, res) => {
   const items = req.body?.items; // it will be an array like this [{bookId,quantity},...]
 
   const prevPendingUserOrder = await Order.findOne({
-    userId: req.body.user?._id,
+    userId: req.user._id,
     paymentStatus: 'pending',
   });
 
@@ -63,7 +63,7 @@ const placeOrder = asyncHandler(async (req, res) => {
 });
 
 const listOrders = asyncHandler(async (req, res) => {
-  const userOrders = await Order.find({ userId: req.body.user?._id })
+  const userOrders = await Order.find({ userId: req.user._id })
     .sort({ createdAt: -1 }) //createdAt: -1 will return recent orders
     .select('-userId -paymentId');
 

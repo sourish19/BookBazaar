@@ -43,4 +43,4 @@ const validateRazorpayPayment = () => {
   ];
 };
 
-export { placeRazorpayOrderValidator,validateRazorpayPayment };
+export { placeRazorpayOrderValidator, validateRazorpayPayment };

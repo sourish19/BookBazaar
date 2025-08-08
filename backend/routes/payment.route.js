@@ -7,7 +7,10 @@ import {
   verifyRazorpayPayment,
   failedRazorpayPayment,
 } from '../controllers/payment.controller.js';
-import { placeRazorpayOrderValidator,validateRazorpayPayment } from '../validators/payment.validator.js';
+import {
+  placeRazorpayOrderValidator,
+  validateRazorpayPayment,
+} from '../validators/payment.validator.js';
 import validate from '../middlewares/validationError.middleware.js';
 
 const router = Router();
@@ -23,7 +26,13 @@ router
   );
 router
   .route('/razorpay/verify')
-  .post(isLoggedIn, isApiKeyValid,validateRazorpayPayment(),validate, verifyRazorpayPayment);
+  .post(
+    isLoggedIn,
+    isApiKeyValid,
+    validateRazorpayPayment(),
+    validate,
+    verifyRazorpayPayment
+  );
 router
   .route('/razorpay/failed')
   .post(isLoggedIn, isApiKeyValid, failedRazorpayPayment);
