@@ -69,7 +69,7 @@ const verifyRazorpayPayment = asyncHandler(async (req, res) => {
       },
     },
     { new: true }
-  ).select("");
+  ).select('');
 
   if (!paymentSuccess) {
     throw new ApiError([], 'Payment record not found or update failed', 404);
@@ -115,7 +115,7 @@ const failedRazorpayPayment = asyncHandler(async (req, res) => {
   const failedPayment = await Payment.findOneAndUpdate(
     {
       userId: req.user?._id,
-      orderId: orderId, 
+      orderId: orderId,
     },
     {
       $set: {
@@ -130,10 +130,7 @@ const failedRazorpayPayment = asyncHandler(async (req, res) => {
     throw new ApiError([], 'Payment not found or update failed', 400);
   }
 
-  res
-    .status(200)
-    .json(new ApiResponse(200, 'Payment marked as failed', {}));
+  res.status(200).json(new ApiResponse(200, 'Payment marked as failed', {}));
 });
-
 
 export { createRazorPayOrder, verifyRazorpayPayment, failedRazorpayPayment };

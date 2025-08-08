@@ -16,7 +16,12 @@ const addBookValidation = () => {
     body('genre')
       .isArray({ min: 1 })
       .withMessage('Genre must be a non-empty array'),
-    body('genre.*').isString().trim().toLowerCase().isIn(AVAILABLE_BOOKS_GENRE),
+    body('genre.*')
+      .isString()
+      .trim()
+      .toLowerCase()
+      .isIn(AVAILABLE_BOOKS_GENRE)
+      .withMessage('Invalid genre value'),
     body('description')
       .trim()
       .notEmpty()
@@ -28,13 +33,11 @@ const addBookValidation = () => {
       .isDate()
       .withMessage('Published Date is not a date'),
     body('price')
-      .trim()
       .notEmpty()
       .withMessage('Book price is empty')
       .isNumeric()
       .withMessage('Price should be Numeric'),
     body('stock')
-      .trim()
       .notEmpty()
       .withMessage('Stock is empty')
       .isNumeric()

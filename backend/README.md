@@ -2,7 +2,7 @@
 
 A robust Node.js/Express.js backend API for an e-commerce book marketplace with integrated payment processing, user authentication, and comprehensive book management system.
 
-##  Features
+## Features
 
 - **Authentication & Authorization**
   - JWT-based authentication with access and refresh tokens
@@ -124,18 +124,21 @@ backend/
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd BookBazaar/backend
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Environment Setup**
    Create a `.env` file in the root directory:
+
    ```env
    # Server Configuration
    PORT=8000
@@ -175,6 +178,7 @@ backend/
 ## API Documentation
 
 ### Base URL
+
 ```
 http://localhost:8000/api/v1/bookBazaar
 ```
@@ -182,6 +186,7 @@ http://localhost:8000/api/v1/bookBazaar
 ### Authentication Endpoints
 
 #### Register User
+
 ```http
 POST /auth/register
 Content-Type: application/json
@@ -196,6 +201,7 @@ x-api-key: your_api_key
 ```
 
 #### Login User
+
 ```http
 POST /auth/login
 Content-Type: application/json
@@ -208,11 +214,13 @@ x-api-key: your_api_key
 ```
 
 #### Refresh Token
+
 ```http
 POST /auth/refresh-token
 ```
 
 #### Logout
+
 ```http
 POST /auth/logout
 Authorization: Bearer <access_token>
@@ -221,18 +229,21 @@ Authorization: Bearer <access_token>
 ### Book Endpoints
 
 #### Get All Books
+
 ```http
 GET /books
 x-api-key: your_api_key
 ```
 
 #### Get Book by ID
+
 ```http
 GET /books/:bookId
 x-api-key: your_api_key
 ```
 
 #### Create Book (Admin Only)
+
 ```http
 POST /books
 Authorization: Bearer <access_token>
@@ -251,6 +262,7 @@ Content-Type: multipart/form-data
 ```
 
 #### Update Book (Admin Only)
+
 ```http
 PATCH /books/:bookId
 Authorization: Bearer <access_token>
@@ -258,6 +270,7 @@ x-api-key: your_api_key
 ```
 
 #### Delete Book (Admin Only)
+
 ```http
 DELETE /books/:bookId
 Authorization: Bearer <access_token>
@@ -267,6 +280,7 @@ x-api-key: your_api_key
 ### Cart Endpoints
 
 #### Add Items to Cart
+
 ```http
 POST /cart/add-cart-item
 Authorization: Bearer <access_token>
@@ -284,6 +298,7 @@ Content-Type: application/json
 ```
 
 #### Get User Cart
+
 ```http
 GET /cart/get-cart-items/:cartId
 Authorization: Bearer <access_token>
@@ -291,6 +306,7 @@ x-api-key: your_api_key
 ```
 
 #### Remove Item from Cart
+
 ```http
 DELETE /cart/delete-cart-item/:cartId
 Authorization: Bearer <access_token>
@@ -303,6 +319,7 @@ Content-Type: application/json
 ```
 
 #### Clear Cart
+
 ```http
 DELETE /cart/delete-cart/:cartId
 Authorization: Bearer <access_token>
@@ -312,6 +329,7 @@ x-api-key: your_api_key
 ### Order Endpoints
 
 #### Place Order
+
 ```http
 POST /order/place-order
 Authorization: Bearer <access_token>
@@ -338,6 +356,7 @@ Content-Type: application/json
 ```
 
 #### List User Orders
+
 ```http
 GET /order/list-orders
 Authorization: Bearer <access_token>
@@ -345,6 +364,7 @@ x-api-key: your_api_key
 ```
 
 #### Get Order Details
+
 ```http
 GET /order/order-details/:orderId
 Authorization: Bearer <access_token>
@@ -354,6 +374,7 @@ x-api-key: your_api_key
 ### Payment Endpoints
 
 #### Create Razorpay Order
+
 ```http
 POST /payment/razorpay/create
 Authorization: Bearer <access_token>
@@ -366,6 +387,7 @@ Content-Type: application/json
 ```
 
 #### Verify Payment
+
 ```http
 POST /payment/razorpay/verify
 Authorization: Bearer <access_token>
@@ -384,6 +406,7 @@ Content-Type: application/json
 ```
 
 #### Handle Failed Payment
+
 ```http
 POST /payment/razorpay/failed
 Authorization: Bearer <access_token>
@@ -399,6 +422,7 @@ Content-Type: application/json
 ### Review Endpoints
 
 #### Add Review
+
 ```http
 POST /review/add-review/:bookId
 Authorization: Bearer <access_token>
@@ -412,12 +436,14 @@ Content-Type: application/json
 ```
 
 #### Get Book Reviews
+
 ```http
 GET /review/get-reviews/:bookId
 x-api-key: your_api_key
 ```
 
 #### Update Review
+
 ```http
 PATCH /review/update-review/:reviewId
 Authorization: Bearer <access_token>
@@ -425,6 +451,7 @@ x-api-key: your_api_key
 ```
 
 #### Delete Review
+
 ```http
 DELETE /review/delete-review/:reviewId
 Authorization: Bearer <access_token>
@@ -434,11 +461,13 @@ x-api-key: your_api_key
 ## Authentication & Security
 
 ### JWT Tokens
+
 - **Access Token**: Short-lived (1 day) for API access
 - **Refresh Token**: Long-lived (10 days) for token renewal
 - **API Key**: Required for all endpoints for additional security
 
 ### Middleware Stack
+
 1. **API Key Validation**: Validates API key in headers
 2. **Authentication**: Verifies JWT token and user session
 3. **Authorization**: Checks user roles for protected routes
@@ -456,32 +485,38 @@ x-api-key: your_api_key
 ## 📊 Database Models
 
 ### User Model
+
 - Authentication details
 - Role-based access control
 - Email verification status
 
 ### Book Model
+
 - Book information (title, author, description)
 - Pricing and stock management
 - Genre categorization
 - Image URLs
 
 ### Cart Model
+
 - User association
 - Book items with quantities
 - Total bill calculation
 
 ### Order Model
+
 - User and payment association
 - Order items and shipping details
 - Order and payment status tracking
 
 ### Payment Model
+
 - Razorpay integration details
 - Payment status and verification
 - Error handling for failed payments
 
 ### Review Model
+
 - User and book association
 - Rating and comment system
 - Timestamp tracking
@@ -510,6 +545,7 @@ The API uses a centralized error handling system:
 ## Testing
 
 The API includes:
+
 - **Health Check Endpoint**: `/health` for monitoring
 - **Error Logging**: Comprehensive error tracking
 - **Input Validation**: Robust data validation
@@ -517,18 +553,18 @@ The API includes:
 
 ## Environment Variables
 
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `PORT` | Server port | Yes |
-| `MONGODB_URI` | MongoDB connection string | Yes |
-| `AUTH_ACCESS_TOKEN_SECRET` | JWT access token secret | Yes |
-| `AUTH_REFRESH_TOKEN_SECRET` | JWT refresh token secret | Yes |
-| `CLOUDINARY_CLOUD_NAME` | Cloudinary cloud name | Yes |
-| `CLOUDINARY_API_KEY` | Cloudinary API key | Yes |
-| `CLOUDINARY_API_SECRET` | Cloudinary API secret | Yes |
-| `RAZORPAY_API_KEY_ID` | Razorpay key ID | Yes |
-| `RAZORPAY_API_KEY_SECRET` | Razorpay secret key | Yes |
-| `MAILTRAP_*` | Email configuration | Optional |
+| Variable                    | Description               | Required |
+| --------------------------- | ------------------------- | -------- |
+| `PORT`                      | Server port               | Yes      |
+| `MONGODB_URI`               | MongoDB connection string | Yes      |
+| `AUTH_ACCESS_TOKEN_SECRET`  | JWT access token secret   | Yes      |
+| `AUTH_REFRESH_TOKEN_SECRET` | JWT refresh token secret  | Yes      |
+| `CLOUDINARY_CLOUD_NAME`     | Cloudinary cloud name     | Yes      |
+| `CLOUDINARY_API_KEY`        | Cloudinary API key        | Yes      |
+| `CLOUDINARY_API_SECRET`     | Cloudinary API secret     | Yes      |
+| `RAZORPAY_API_KEY_ID`       | Razorpay key ID           | Yes      |
+| `RAZORPAY_API_KEY_SECRET`   | Razorpay secret key       | Yes      |
+| `MAILTRAP_*`                | Email configuration       | Optional |
 
 ## Contributing
 
@@ -538,5 +574,4 @@ The API includes:
 4. Add tests if applicable
 5. Submit a pull request
 
-
-**Built by Sourish 😊** 
+**Built by Sourish 😊**

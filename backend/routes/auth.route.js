@@ -22,7 +22,7 @@ import {
   userResetPasswordValidation,
   userEmailValidation,
 } from '../validators/auth.validator.js';
-import validate from '../middlewares/userValidate.middleware.js';
+import validate from '../middlewares/validationError.middleware.js';
 import { isLoggedIn } from '../middlewares/auth.middleware.js';
 import upload from '../middlewares/multer.middleware.js';
 

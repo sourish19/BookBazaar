@@ -37,6 +37,12 @@ const upload = multer({
   limits: {
     fileSize: 1 * 1000 * 1000,
   },
+  fileFilter: (req, file, cb) => {
+    console.log('Multer fileFilter called with file:', file);
+    console.log('File fieldname:', file.fieldname);
+    console.log('File originalname:', file.originalname);
+    cb(null, true);
+  },
 });
 
 export default upload;

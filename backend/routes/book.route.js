@@ -18,7 +18,7 @@ import {
   bookIdValidation,
   updateBookDetailsValidation,
 } from '../validators/book.validator.js';
-import validate from '../middlewares/userValidate.middleware.js';
+import validate from '../middlewares/validationError.middleware.js';
 import upload from '../middlewares/multer.middleware.js';
 
 const router = Router();
@@ -28,16 +28,18 @@ router.route('/').get(listAllBooks); // List all books
 router.route('/:bookId').get(bookIdValidation(), validate, getBookDetails); // Get book details
 
 // Secured Routes
-router.route('/').post(
-  isLoggedIn,
-  isApiKeyValid,
-  verifyPermission,
-  upload.single('bookCoverImg'),
-  parseBookJSON,
-  addBookValidation(), // Need to handle Cover Image
-  validate,
-  addBooks
-); // Add Books - Adimin Only
+router
+  .route('/')
+  .post(
+    isLoggedIn,
+    isApiKeyValid,
+    verifyPermission,
+    upload.single('bookCoverImg'),
+    parseBookJSON,
+    addBookValidation(),
+    validate,
+    addBooks
+  ); // Add Books - Adimin Only
 router
   .route('/:bookId')
   .put(

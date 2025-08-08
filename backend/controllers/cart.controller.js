@@ -102,7 +102,7 @@ const removeItemFromCart = asyncHandler(async (req, res) => {
 
   // Recalculate total amount after removing item
   const newTotalAmount = calculateTotalAmount(userCartItem.books);
-  
+
   const updatedCart = await Cart.findByIdAndUpdate(
     userCartItem._id,
     { bill: newTotalAmount },

@@ -11,7 +11,7 @@ import {
   addBookReviewValidation,
   bookIdValidation,
 } from '../validators/review.validator.js';
-import validate from '../middlewares/userValidate.middleware.js';
+import validate from '../middlewares/validationError.middleware.js';
 
 const router = Router();
 

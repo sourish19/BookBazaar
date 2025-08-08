@@ -17,16 +17,29 @@ const addBooks = asyncHandler(async (req, res) => {
 
   const coverImage = req.file?.filename;
 
-  if (!coverImage) throw new ApiError([], 'No book cover image found', 404);
-
-  const availableBook = await Books.findOne({ title, author });
-
-  // if Book found in db throw an error
-  if (availableBook) throw new ApiError([], 'Book already exists', 400);
+  if (!coverImage) {
+    throw new ApiError(
+      [],
+      'No book cover image found. Please upload an image with field name "bookCoverImg"',
+      400
+    );
+  }
 
   const bookImgUrl = staticFilePath(req, req.file?.filename);
   const bookLocalImgUrl = localFilePath(req, req.file?.filename);
   const publidId = generateUniqueId('bookCoverImg');
+
+  const availableBook = await Books.findOne({ title, author });
+
+  // if Book found in db throw an error
+  if (availableBook) {
+    fs.unlink(bookLocalImgUrl, (err) => {
+      if (err) {
+        console.error('Unable to remove book cover image file');
+      }
+    });
+    throw new ApiError([], 'Book already exists', 400);
+  }
 
   // Creates and saves in the db
   const createBook = await Books.create({
@@ -54,8 +67,6 @@ const addBooks = asyncHandler(async (req, res) => {
       url: uploadResult.secure_url || createBook.coverImage.url,
       localPath: '',
     };
-
-    console.log(bookLocalImgUrl);
 
     fs.unlink(bookLocalImgUrl, (err) => {
       if (err) {
