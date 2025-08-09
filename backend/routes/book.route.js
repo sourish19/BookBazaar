@@ -46,6 +46,8 @@ router
     isLoggedIn,
     isApiKeyValid,
     verifyPermission,
+    upload.single('bookCoverImg'),
+    parseBookJSON,
     updateBookDetailsValidation(),
     validate,
     updateBookDetails

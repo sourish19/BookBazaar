@@ -18,6 +18,7 @@ const addItemToCart = asyncHandler(async (req, res) => {
   const fetchedBooks = await Books.find({ _id: { $in: bookIds } }).select(
     'stock price'
   );
+
   if (!fetchedBooks) throw new ApiError([], 'No Books found', 404);
 
   // Map each bookId with the book object from the db
@@ -32,14 +33,12 @@ const addItemToCart = asyncHandler(async (req, res) => {
 
   const totalAmount = calculateTotalAmount(validItemsWithSubtotal);
 
-  const newCart = await Cart.create(
-    {
-      userId: req.user._id,
-      books: validItemsWithSubtotal,
-      bill: totalAmount,
-    },
-    { new: true }
-  );
+  const newCart = await Cart.create({
+    userId: req.user?._id,
+    books: validItemsWithSubtotal,
+    bill: totalAmount,
+  });
+  console.log(newCart);
 
   res.status(201).json(
     new ApiResponse(201, 'Items added to cart successfully', {
@@ -89,28 +88,38 @@ const clearCart = asyncHandler(async (req, res) => {
 });
 
 const removeItemFromCart = asyncHandler(async (req, res) => {
-  const userCartItem = await Cart.findOneAndUpdate(
+  // Check if the book exists in the cart
+  const userCart = await Cart.findOne({
+    _id: req.params?.cartId,
+    userId: req.user?._id,
+    books: { $elemMatch: { bookId: req.body?.bookId } },
+  }).select('-userId');
+
+  if (!userCart) {
+    throw new ApiError([], 'User cart item not found', 403);
+  }
+
+  // Step 2: Prepare updated books array and new bill
+  const updatedBooks = userCart.books.filter(
+    (b) => b.bookId.toString() !== req.body?.bookId
+  );
+  const newTotalAmount = calculateTotalAmount(updatedBooks);
+
+  // Update cart 
+  const updatedCart = await Cart.findOneAndUpdate(
     {
       _id: req.params?.cartId,
       userId: req.user?._id,
     },
-    { $pull: { books: { bookId: req.body?.bookId } } },
-    { new: true }
-  ).select('-userId');
-
-  if (!userCartItem) throw new ApiError([], 'User cart Item not found', 403);
-
-  // Recalculate total amount after removing item
-  const newTotalAmount = calculateTotalAmount(userCartItem.books);
-
-  const updatedCart = await Cart.findByIdAndUpdate(
-    userCartItem._id,
-    { bill: newTotalAmount },
+    {
+      $pull: { books: { bookId: req.body?.bookId } },
+      $set: { bill: newTotalAmount },
+    },
     { new: true }
   ).select('-userId');
 
   res.status(200).json(
-    new ApiResponse(200, 'User Cart Item successfully deleted', [
+    new ApiResponse(200, 'User cart item successfully deleted', [
       {
         cartId: updatedCart._id,
         items: updatedCart.books,
@@ -119,5 +128,6 @@ const removeItemFromCart = asyncHandler(async (req, res) => {
     ])
   );
 });
+
 
 export { addItemToCart, getUserCart, clearCart, removeItemFromCart };

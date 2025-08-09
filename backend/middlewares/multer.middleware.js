@@ -35,13 +35,7 @@ const storage = multer.diskStorage({
 const upload = multer({
   storage: storage,
   limits: {
-    fileSize: 1 * 1000 * 1000,
-  },
-  fileFilter: (req, file, cb) => {
-    console.log('Multer fileFilter called with file:', file);
-    console.log('File fieldname:', file.fieldname);
-    console.log('File originalname:', file.originalname);
-    cb(null, true);
+    fileSize: 10 * 1000 * 1000, //10Mb
   },
 });
 

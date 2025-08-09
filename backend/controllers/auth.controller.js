@@ -383,30 +383,28 @@ const changeUserAvatar = asyncHandler(async (req, res) => {
 
   const avatarUrl = staticFilePath(req, req.file?.filename);
   const avatarLocalPathUrl = localFilePath(req, req.file?.filename);
+  const publicId = generateUniqueId('avatar');
 
   // Check file exists before proceeding
   if (!fs.existsSync(avatarLocalPathUrl)) {
     throw new ApiError([], 'Uploaded file not found', 400);
   }
 
-  const user = await User.findByIdAndUpdate(
-    req.user?._id,
-    {
-      $set: {
-        avatar: {
-          url: avatarUrl,
-          localPath: avatarLocalPathUrl,
-        },
-      },
-    },
-    { new: true }
+  const user = await User.findById(req.user?._id).select(
+    '-password -refreshToken -isEmailValid -emailVerificationToken -emailVerificationTokenExpiry -resetPasswordToken -resetPasswordTokenExpiry'
   );
+
   if (!user) throw new ApiError([], 'User not found', 404);
 
-  const publicId = generateUniqueId('avatar');
-
   try {
+    // Remove old image from cloudinary
+    if (user.avatar.publicId) {
+      const oldPublicId = user.avatar.publicId;
+      await cloudinary.uploader.destroy(oldPublicId);
+    }
+
     const uploadResult = await cloudinary.uploader.upload(avatarLocalPathUrl, {
+      folder: 'avatars',
       public_id: publicId,
     });
 
@@ -419,6 +417,7 @@ const changeUserAvatar = asyncHandler(async (req, res) => {
 
     user.avatar.publicId = uploadResult.public_id;
     user.avatar.url = uploadResult.secure_url;
+    user.avatar.localPath = avatarUrl;
 
     await user.save({ validateBeforeSave: false });
 

@@ -102,7 +102,7 @@ userSchema.methods.comparePassword = async function (newPassword) {
 userSchema.methods.generateRandomHashedTokens = () => {
   const token = crypto.randomBytes(32).toString('hex');
   const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
-  const tokenExpiry = Date.now() + 1000 * 60 * 40; //40 min
+  const tokenExpiry = Date.now() + 1000 * 60 * 60; //60 min
   return { token, hashedToken, tokenExpiry };
 };
 

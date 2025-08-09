@@ -29,17 +29,25 @@ const addBooks = asyncHandler(async (req, res) => {
   const bookLocalImgUrl = localFilePath(req, req.file?.filename);
   const publidId = generateUniqueId('bookCoverImg');
 
+  if (!fs.existsSync(bookLocalImgUrl)) {
+    throw new ApiError([], 'Uploaded file not found', 400);
+  }
+
   const availableBook = await Books.findOne({ title, author });
 
   // if Book found in db throw an error
   if (availableBook) {
     fs.unlink(bookLocalImgUrl, (err) => {
       if (err) {
-        console.error('Unable to remove book cover image file');
+        console.error(
+          'Unable to remove book cover image file',
+          bookLocalImgUrl
+        );
       }
     });
     throw new ApiError([], 'Book already exists', 400);
   }
+  console.log(req.user?._id);
 
   // Creates and saves in the db
   const createBook = await Books.create({
@@ -59,6 +67,7 @@ const addBooks = asyncHandler(async (req, res) => {
 
   try {
     const uploadResult = await cloudinary.uploader.upload(bookLocalImgUrl, {
+      folder: 'books',
       public_id: publidId,
     });
 
@@ -148,7 +157,7 @@ const updateBookDetails = asyncHandler(async (req, res) => {
 
   // Also Check if user sends an empty object since the validation fields are optional
   if (!bookUpdateField || Object.keys(bookUpdateField).length === 0)
-    throw new ApiError([], { message: 'No fields provided for update' }, 400);
+    throw new ApiError([], 'No fields provided for update', 400);
 
   try {
     const updateBook = await Books.findByIdAndUpdate(bookId, bookUpdateField, {
@@ -157,6 +166,37 @@ const updateBookDetails = asyncHandler(async (req, res) => {
     }).select('-createdBy');
 
     if (!updateBook) throw new ApiError([], { message: 'Book not found' }, 404);
+
+    if (req.file?.filename) {
+      const coverImage = req.file?.filename;
+      const bookImgUrl = staticFilePath(req, req.file?.filename);
+      const bookLocalImgUrl = localFilePath(req, req.file?.filename);
+      const publidId = generateUniqueId('bookCoverImg');
+
+      if (!fs.existsSync(bookLocalImgUrl)) {
+        throw new ApiError([], 'Uploaded file not found', 400);
+      }
+
+      const uploadResult = await cloudinary.uploader.upload(bookLocalImgUrl, {
+        folder: 'books',
+        public_id: publidId,
+      });
+
+      // Remove local file after successful upload
+      fs.unlink(bookLocalImgUrl, (err) => {
+        if (err) {
+          console.error('Failed to remove local image:', err);
+        }
+      });
+
+      updateBook.coverImage = {
+        publicId: uploadResult.public_id || '',
+        url: uploadResult.secure_url || updateBook.coverImage.url,
+        localPath: '',
+      };
+
+      await updateBook.save({ validateBeforeSave: false });
+    }
 
     res.status(200).json(
       new ApiResponse(200, { message: 'Book updated successfully' }, [
@@ -169,7 +209,7 @@ const updateBookDetails = asyncHandler(async (req, res) => {
           publishedDate: updateBook.publishedDate,
           price: updateBook.price,
           stock: updateBook.stock,
-          coverImage: updateBook.coverImage,
+          coverImage: updateBook.coverImage.url,
         },
       ])
     );

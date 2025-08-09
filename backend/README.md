@@ -1,4 +1,4 @@
-# 📚 BookBazaar Backend API
+# BookBazaar Backend API
 
 A robust Node.js/Express.js backend API for an e-commerce book marketplace with integrated payment processing, user authentication, and comprehensive book management system.
 
@@ -474,7 +474,7 @@ x-api-key: your_api_key
 4. **Validation**: Validates request data using express-validator
 5. **Error Handling**: Custom error middleware for consistent responses
 
-## 💳 Payment Flow
+## Payment Flow
 
 1. **Order Placement**: User places order with items and shipping details
 2. **Razorpay Order Creation**: Backend creates Razorpay order
@@ -482,7 +482,7 @@ x-api-key: your_api_key
 4. **Payment Verification**: Backend verifies payment signature
 5. **Order Confirmation**: Order status updated to confirmed
 
-## 📊 Database Models
+## Database Models
 
 ### User Model
 
@@ -521,7 +521,7 @@ x-api-key: your_api_key
 - Rating and comment system
 - Timestamp tracking
 
-## 🛡️ Error Handling
+## Error Handling
 
 The API uses a centralized error handling system:
 
@@ -573,5 +573,7 @@ The API includes:
 3. Make your changes
 4. Add tests if applicable
 5. Submit a pull request
+
+## Author
 
 **Built by Sourish 😊**
